@@ -1,0 +1,240 @@
+{
+  "name": "sol-yaml-support",
+  "version": "0.1.4",
+  "publisher": "RandyGala",
+  "displayName": "SOL - Semantic Operations Language Support",
+  "description": "VS Code extension providing comprehensive syntax highlighting, schema validation, semantic navigation and language support for Semantic Operations Language (.sol) files. Based on the SOL project: https://github.com/regd25/sol",
+  "author": {
+    "name": "Randy Gala",
+    "email": "randy@hexy.dev"
+  },
+  "license": "MIT",
+  "keywords": [
+    "sol",
+    "semantic operations language",
+    "yaml",
+    "semantic",
+    "operations",
+    "language",
+    "syntax-highlighting",
+    "schema-validation",
+    "semantic-navigation"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:sol",
+    "onLanguage:sol-yaml"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/regd25/sol.git"
+  },
+  "homepage": "https://github.com/regd25/sol#readme",
+  "bugs": {
+    "url": "https://github.com/regd25/sol/issues"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "sol.validateSemanticCoherence",
+        "title": "SOL: Validate Semantic Coherence",
+        "category": "SOL"
+      },
+      {
+        "command": "sol.showArtifactTraceability",
+        "title": "SOL: Show Artifact Traceability",
+        "category": "SOL"
+      },
+      {
+        "command": "sol.generateDocumentation",
+        "title": "SOL: Generate Documentation",
+        "category": "SOL"
+      },
+      {
+        "command": "sol.formatDocument",
+        "title": "SOL: Format Document",
+        "category": "SOL"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sol",
+        "path": "./syntaxes/sol.tmLanguage.json",
+        "scopeName": "source.sol"
+      },
+      {
+        "language": "sol-yaml",
+        "path": "./syntaxes/sol-yaml.tmLanguage.json",
+        "scopeName": "source.sol.yaml"
+      },
+      {
+        "language": "omd",
+        "scopeName": "text.html.markdown",
+        "path": "./syntaxes/sol.tmLanguage.json"
+      }
+    ],
+    "languages": [
+      {
+        "aliases": [
+          "SOL",
+          "Semantic Operations Language"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".sol"
+        ],
+        "id": "sol",
+        "firstLine": "^#\\s*SOL\\s*-\\s*Semantic\\s*Operations\\s*Language",
+        "filenames": [
+          "*.sol"
+        ]
+      },
+      {
+        "aliases": [
+          "SOL YAML",
+          "Semantic Operations Language YAML"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".sol.yaml",
+          ".sol.yml"
+        ],
+        "id": "sol-yaml"
+      },
+      {
+        "aliases": [
+          "OMD",
+          "Operations Markdown"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".omd"
+        ],
+        "id": "omd",
+        "mimetypes": [
+          "text/markdown"
+        ]
+      }
+    ],
+    "yamlValidation": [
+      {
+        "fileMatch": [
+          "*.sol.yaml",
+          "*.sol.yml"
+        ],
+        "url": "./schemas/sol-schema.json"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "*.sol"
+        ],
+        "url": "./schemas/sol-schema.json"
+      }
+    ]
+  },
+  "configuration": {
+    "type": "object",
+    "title": "SOL Configuration",
+    "properties": {
+      "sol.formatting.insertSpaces": {
+        "type": "boolean",
+        "default": true,
+        "description": "Use spaces instead of tabs for indentation"
+      },
+      "sol.formatting.tabSize": {
+        "type": "number",
+        "default": 2,
+        "description": "Number of spaces per indentation level"
+      },
+      "sol.formatting.trimTrailingWhitespace": {
+        "type": "boolean",
+        "default": true,
+        "description": "Remove trailing whitespace"
+      },
+      "sol.formatting.insertFinalNewline": {
+        "type": "boolean",
+        "default": true,
+        "description": "Insert final newline"
+      },
+      "sol.formatting.trimFinalNewlines": {
+        "type": "boolean",
+        "default": true,
+        "description": "Trim final newlines"
+      },
+      "sol.validation.enableSemanticCoherence": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable semantic coherence validation"
+      },
+      "sol.traceability.showInlineReferences": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show inline reference information"
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "compile-server": "tsc -p ./server",
+    "vscode:prepublish": "npm run compile",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && jest",
+    "test:unit": "npm run compile && jest --testPathPattern=unit",
+    "test:integration": "npm run compile && jest --testPathPattern=integration",
+    "test:formatter": "npm run compile && jest --testPathPattern=formatter",
+    "test:server": "npm run compile && jest --testPathPattern=server",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^4.7.0",
+    "vscode-languageclient": "^8.0.0",
+    "vscode-languageserver": "^8.0.0",
+    "vscode-languageserver-textdocument": "^1.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "@vscode/test-electron": "^2.3.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/src/test"],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/test/**",
+      "!src/**/*.d.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "setupFilesAfterEnv": ["<rootDir>/src/test/setup.ts"]
+  }
+}

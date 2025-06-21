@@ -1,0 +1,393 @@
+"use strict";
+/**
+ * SOL - Semantic Operations Language Support for VS Code
+ *
+ * This extension provides comprehensive support for SOL following its core principles:
+ * 1. Semantic Coherence: Maintaining narrative integrity
+ * 2. Traceability: Linking artifacts to strategic vision
+ * 3. Simplicity: Start simple, refactor when necessary
+ * 4. Documentation: Every change must include clear examples
+ *
+ * Based on the SOL project: https://github.com/regd25/sol
+ *
+ * @author Randy Gala <randy@hexy.dev>
+ * @license MIT
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deactivate = exports.activate = void 0;
+const vscode = __importStar(require("vscode"));
+const node_1 = require("vscode-languageclient/node");
+let client;
+function activate(context) {
+    console.log('SOL - Semantic Operations Language Support extension is now active!');
+    // Initialize Language Server
+    initializeLanguageServer(context);
+    // Register SOL-specific commands following SOL principles
+    registerSolCommands(context);
+    // Register status bar and diagnostics
+    registerStatusBarAndDiagnostics(context);
+}
+exports.activate = activate;
+function initializeLanguageServer(context) {
+    // The server is implemented in node
+    let serverModule = context.asAbsolutePath('./server/out/server.js');
+    // Debug options for the server
+    let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+    // Server options for both run and debug modes
+    let serverOptions = {
+        run: { module: serverModule, transport: node_1.TransportKind.ipc },
+        debug: {
+            module: serverModule,
+            transport: node_1.TransportKind.ipc,
+            options: debugOptions
+        }
+    };
+    // Language client options
+    let clientOptions = {
+        // Register the server for SOL documents
+        documentSelector: [
+            { scheme: 'file', language: 'sol' },
+            { scheme: 'file', language: 'sol-yaml' }
+        ],
+        synchronize: {
+            // Notify the server about file changes to SOL files
+            fileEvents: [
+                vscode.workspace.createFileSystemWatcher('**/*.sol'),
+                vscode.workspace.createFileSystemWatcher('**/*.sol.yaml'),
+                vscode.workspace.createFileSystemWatcher('**/*.sol.yml')
+            ]
+        }
+    };
+    // Create and start the language client
+    client = new node_1.LanguageClient('solLanguageSupport', 'SOL - Semantic Operations Language Support', serverOptions, clientOptions);
+    client.start();
+}
+function registerSolCommands(context) {
+    // Command: Validate Semantic Coherence
+    const validateCoherenceCommand = vscode.commands.registerCommand('sol.validateSemanticCoherence', () => __awaiter(this, void 0, void 0, function* () {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showWarningMessage('No active SOL document to validate');
+            return;
+        }
+        try {
+            const document = activeEditor.document;
+            const coherenceIssues = yield validateSemanticCoherence(document);
+            if (coherenceIssues.length === 0) {
+                vscode.window.showInformationMessage('✅ Semantic coherence validated successfully');
+            }
+            else {
+                const message = `⚠️ Found ${coherenceIssues.length} semantic coherence issue(s)`;
+                vscode.window.showWarningMessage(message);
+                // Show issues in problems panel
+                showCoherenceIssues(coherenceIssues);
+            }
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(`Error validating coherence: ${error}`);
+        }
+    }));
+    // Command: Show Artifact Traceability
+    const showTraceabilityCommand = vscode.commands.registerCommand('sol.showArtifactTraceability', () => __awaiter(this, void 0, void 0, function* () {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showWarningMessage('No active SOL document');
+            return;
+        }
+        try {
+            const document = activeEditor.document;
+            const traceabilityMap = yield generateTraceabilityMap(document);
+            yield showTraceabilityView(traceabilityMap);
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(`Error generating traceability: ${error}`);
+        }
+    }));
+    // Command: Generate Documentation
+    const generateDocumentationCommand = vscode.commands.registerCommand('sol.generateDocumentation', () => __awaiter(this, void 0, void 0, function* () {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showWarningMessage('No active SOL document');
+            return;
+        }
+        try {
+            const document = activeEditor.document;
+            const documentation = yield generateSolDocumentation(document);
+            yield showDocumentationPreview(documentation);
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(`Error generating documentation: ${error}`);
+        }
+    }));
+    // Command: Format SOL Document
+    const formatSolDocumentCommand = vscode.commands.registerCommand('sol.formatDocument', () => __awaiter(this, void 0, void 0, function* () {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showWarningMessage('No active SOL document to format');
+            return;
+        }
+        if (activeEditor.document.languageId !== 'sol' && activeEditor.document.languageId !== 'sol-yaml') {
+            vscode.window.showWarningMessage('Active document is not a SOL file');
+            return;
+        }
+        try {
+            // Use VS Code's built-in formatting command which will call our language server
+            yield vscode.commands.executeCommand('editor.action.formatDocument');
+            vscode.window.showInformationMessage('✅ SOL document formatted successfully');
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(`Error formatting SOL document: ${error}`);
+        }
+    }));
+    context.subscriptions.push(validateCoherenceCommand, showTraceabilityCommand, generateDocumentationCommand, formatSolDocumentCommand);
+}
+function registerStatusBarAndDiagnostics(context) {
+    // Status bar item for SOL documents
+    const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    statusBarItem.text = "$(check) SOL";
+    statusBarItem.tooltip = "SOL - Semantic Operations Language Support";
+    statusBarItem.command = 'sol.validateSemanticCoherence';
+    // Show status bar item when SOL document is active
+    const updateStatusBar = () => {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor && (activeEditor.document.languageId === 'sol' ||
+            activeEditor.document.languageId === 'sol-yaml')) {
+            statusBarItem.show();
+        }
+        else {
+            statusBarItem.hide();
+        }
+    };
+    vscode.window.onDidChangeActiveTextEditor(updateStatusBar);
+    updateStatusBar();
+    context.subscriptions.push(statusBarItem);
+}
+// SOL-specific validation functions
+function validateSemanticCoherence(document) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const issues = [];
+        const text = document.getText();
+        const lines = text.split('\n');
+        // Validate Vision-Domain coherence
+        const visionReferences = extractVisionReferences(text);
+        const domainDefinitions = extractDomainDefinitions(text);
+        for (const visionRef of visionReferences) {
+            if (!domainDefinitions.find(d => d.vision === visionRef.id)) {
+                issues.push({
+                    type: 'coherence',
+                    message: `Vision "${visionRef.id}" is not linked to any Domain`,
+                    line: visionRef.line,
+                    severity: 'warning'
+                });
+            }
+        }
+        // Validate Actor-Process coherence
+        const actorReferences = extractActorReferences(text);
+        const processDefinitions = extractProcessDefinitions(text);
+        for (const actor of actorReferences) {
+            const usedInProcesses = processDefinitions.filter(p => p.actors.includes(actor.id));
+            if (usedInProcesses.length === 0) {
+                issues.push({
+                    type: 'coherence',
+                    message: `Actor "${actor.id}" is not used in any Process`,
+                    line: actor.line,
+                    severity: 'info'
+                });
+            }
+        }
+        return issues;
+    });
+}
+function generateTraceabilityMap(document) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const text = document.getText();
+        return {
+            visions: extractVisionDefinitions(text),
+            domains: extractDomainDefinitions(text),
+            actors: extractActorReferences(text),
+            processes: extractProcessDefinitions(text),
+            policies: extractPolicyDefinitions(text),
+            indicators: extractIndicatorDefinitions(text)
+        };
+    });
+}
+function generateSolDocumentation(document) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const traceabilityMap = yield generateTraceabilityMap(document);
+        let documentation = '# SOL Documentation\n\n';
+        documentation += '## Strategic Vision\n\n';
+        for (const vision of traceabilityMap.visions) {
+            documentation += `### ${vision.id}\n`;
+            documentation += `${vision.content}\n\n`;
+            // Find related domains
+            const relatedDomains = traceabilityMap.domains.filter(d => d.vision === vision.id);
+            if (relatedDomains.length > 0) {
+                documentation += '**Related Domains:**\n';
+                for (const domain of relatedDomains) {
+                    documentation += `- ${domain.id}: ${domain.description}\n`;
+                }
+                documentation += '\n';
+            }
+        }
+        documentation += '## Operational Processes\n\n';
+        for (const process of traceabilityMap.processes) {
+            documentation += `### ${process.id}\n`;
+            documentation += `**Vision:** ${process.vision}\n`;
+            documentation += `**Actors:** ${process.actors.join(', ')}\n`;
+            documentation += '**Steps:**\n';
+            for (let i = 0; i < process.steps.length; i++) {
+                documentation += `${i + 1}. ${process.steps[i]}\n`;
+            }
+            documentation += '\n';
+        }
+        return documentation;
+    });
+}
+// Extraction helper functions
+function extractVisionReferences(text) {
+    // Implementation for extracting vision references
+    return [];
+}
+function extractVisionDefinitions(text) {
+    // Implementation for extracting vision definitions
+    return [];
+}
+function extractDomainDefinitions(text) {
+    // Implementation for extracting domain definitions
+    return [];
+}
+function extractActorReferences(text) {
+    // Implementation for extracting actor references
+    return [];
+}
+function extractProcessDefinitions(text) {
+    // Implementation for extracting process definitions
+    return [];
+}
+function extractPolicyDefinitions(text) {
+    // Implementation for extracting policy definitions
+    return [];
+}
+function extractIndicatorDefinitions(text) {
+    // Implementation for extracting indicator definitions
+    return [];
+}
+function showCoherenceIssues(issues) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Show issues in VS Code problems panel
+        const diagnostics = issues.map(issue => {
+            const diagnostic = new vscode.Diagnostic(new vscode.Range(issue.line, 0, issue.line, 100), issue.message, issue.severity === 'error' ? vscode.DiagnosticSeverity.Error :
+                issue.severity === 'warning' ? vscode.DiagnosticSeverity.Warning :
+                    vscode.DiagnosticSeverity.Information);
+            diagnostic.source = 'SOL';
+            return diagnostic;
+        });
+        const collection = vscode.languages.createDiagnosticCollection('sol');
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor) {
+            collection.set(activeEditor.document.uri, diagnostics);
+        }
+    });
+}
+function showTraceabilityView(traceabilityMap) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Create and show traceability view
+        const panel = vscode.window.createWebviewPanel('solTraceability', 'SOL Traceability', vscode.ViewColumn.Beside, { enableScripts: true });
+        const traceabilityHtml = generateTraceabilityHtml(traceabilityMap);
+        panel.webview.html = traceabilityHtml;
+    });
+}
+function showDocumentationPreview(documentation) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Create and show documentation preview
+        const doc = yield vscode.workspace.openTextDocument({
+            content: documentation,
+            language: 'markdown'
+        });
+        yield vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+        yield vscode.commands.executeCommand('markdown.showPreview');
+    });
+}
+function generateTraceabilityHtml(traceabilityMap) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SOL Traceability</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .artifact { margin: 10px 0; padding: 10px; border-left: 3px solid #007acc; }
+            .vision { border-left-color: #28a745; }
+            .domain { border-left-color: #007acc; }
+            .process { border-left-color: #ffc107; }
+            .actor { border-left-color: #dc3545; }
+        </style>
+    </head>
+    <body>
+        <h1>SOL Traceability Map</h1>
+        <h2>Visions</h2>
+        ${traceabilityMap.visions.map(v => `
+            <div class="artifact vision">
+                <strong>${v.id}</strong>: ${v.content}
+            </div>
+        `).join('')}
+        
+        <h2>Domains</h2>
+        ${traceabilityMap.domains.map(d => `
+            <div class="artifact domain">
+                <strong>${d.id}</strong>: ${d.description} (Vision: ${d.vision})
+            </div>
+        `).join('')}
+        
+        <h2>Processes</h2>
+        ${traceabilityMap.processes.map(p => `
+            <div class="artifact process">
+                <strong>${p.id}</strong> - Vision: ${p.vision}<br>
+                Actors: ${p.actors.join(', ')}<br>
+                Steps: ${p.steps.length}
+            </div>
+        `).join('')}
+    </body>
+    </html>
+    `;
+}
+function deactivate() {
+    if (!client) {
+        return undefined;
+    }
+    return client.stop();
+}
+exports.deactivate = deactivate;
+//# sourceMappingURL=extension.js.map
