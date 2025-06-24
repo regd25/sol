@@ -20,6 +20,8 @@ import {
     ServerOptions,
     TransportKind
 } from 'vscode-languageclient/node';
+import { SemanticValidator, ValidationResult } from './validator/SemanticValidator';
+import { SolMigrator, MigrationResult } from './migrator/SolMigrator';
 
 let client: LanguageClient;
 
@@ -82,7 +84,10 @@ function initializeLanguageServer(context: vscode.ExtensionContext) {
 }
 
 function registerSolCommands(context: vscode.ExtensionContext) {
-    // Command: Validate Semantic Coherence
+    const semanticValidator = new SemanticValidator();
+    const solMigrator = new SolMigrator();
+
+    // Command: Validate Semantic Coherence (Updated for Phase 4)
     const validateCoherenceCommand = vscode.commands.registerCommand(
         'sol.validateSemanticCoherence',
         async () => {
@@ -94,15 +99,22 @@ function registerSolCommands(context: vscode.ExtensionContext) {
 
             try {
                 const document = activeEditor.document;
-                const coherenceIssues = await validateSemanticCoherence(document);
+                const documentText = document.getText();
                 
-                if (coherenceIssues.length === 0) {
-                    vscode.window.showInformationMessage('✅ Semantic coherence validated successfully');
+                // Use new semantic validator
+                const validationResult = await semanticValidator.validateDocument(documentText);
+                
+                if (validationResult.isValid) {
+                    vscode.window.showInformationMessage(
+                        `✅ Validación semántica exitosa - ${validationResult.artifacts.length} artefactos validados en ${validationResult.processingTime}ms`
+                    );
                 } else {
-                    const message = `⚠️ Found ${coherenceIssues.length} semantic coherence issue(s)`;
+                    const errorCount = validationResult.errors.filter(e => e.severity === 'error').length;
+                    const warningCount = validationResult.warnings.length;
+                    const message = `⚠️ Encontrados ${errorCount} errores y ${warningCount} advertencias semánticas`;
+                    
                     vscode.window.showWarningMessage(message);
-                    // Show issues in problems panel
-                    showCoherenceIssues(coherenceIssues);
+                    showValidationResults(validationResult);
                 }
             } catch (error) {
                 vscode.window.showErrorMessage(`Error validating coherence: ${error}`);
@@ -175,11 +187,69 @@ function registerSolCommands(context: vscode.ExtensionContext) {
         }
     );
 
+    // Command: Migrate SOL Document (Phase 4 - Automated Migration)
+    const migrateSolDocumentCommand = vscode.commands.registerCommand(
+        'sol.migrateDocument',
+        async () => {
+            const activeEditor = vscode.window.activeTextEditor;
+            if (!activeEditor) {
+                vscode.window.showWarningMessage('No active SOL document to migrate');
+                return;
+            }
+
+            try {
+                const document = activeEditor.document;
+                const documentText = document.getText();
+                
+                // Confirm migration
+                const confirm = await vscode.window.showWarningMessage(
+                    '¿Migrar documento SOL a v2025.07? Esta acción modificará el contenido.',
+                    { modal: true },
+                    'Migrar',
+                    'Cancelar'
+                );
+                
+                if (confirm !== 'Migrar') {
+                    return;
+                }
+                
+                // Perform migration
+                const migrationResult = await solMigrator.migrate(documentText);
+                
+                if (migrationResult.success) {
+                    // Replace document content
+                    const edit = new vscode.WorkspaceEdit();
+                    const fullRange = new vscode.Range(
+                        document.positionAt(0),
+                        document.positionAt(documentText.length)
+                    );
+                    edit.replace(document.uri, fullRange, migrationResult.migratedContent);
+                    
+                    await vscode.workspace.applyEdit(edit);
+                    
+                    const stats = migrationResult.statistics;
+                    vscode.window.showInformationMessage(
+                        `✅ Migración exitosa: ${stats.migratedReferences} referencias, ${stats.extractedFoundational} artefactos fundacionales, ${stats.fixedFlowSteps} pasos de flujo actualizados`
+                    );
+                    
+                    showMigrationResults(migrationResult);
+                } else {
+                    vscode.window.showErrorMessage(
+                        `❌ Error en migración: ${migrationResult.errors.join(', ')}`
+                    );
+                }
+            } catch (error) {
+                vscode.window.showErrorMessage(`Error during migration: ${error}`);
+            }
+        }
+    );
+
     context.subscriptions.push(
         validateCoherenceCommand,
         showTraceabilityCommand,
         generateDocumentationCommand,
-        formatSolDocumentCommand
+        formatSolDocumentCommand,
+        migrateSolDocumentCommand
     );
 }
 
@@ -491,4 +561,200 @@ export function deactivate(): Thenable<void> | undefined {
         return undefined;
     }
     return client.stop();
+}
+
+// ====== HELPER FUNCTIONS FOR PHASE 4 ======
+
+async function showValidationResults(validationResult: ValidationResult) {
+    // Create and show validation results in a webview
+    const panel = vscode.window.createWebviewPanel(
+        'solValidationResults',
+        'SOL Validation Results',
+        vscode.ViewColumn.Beside,
+        { enableScripts: true }
+    );
+
+    panel.webview.html = generateValidationResultsHtml(validationResult);
+}
+
+async function showMigrationResults(migrationResult: MigrationResult) {
+    // Create and show migration results in a webview
+    const panel = vscode.window.createWebviewPanel(
+        'solMigrationResults',
+        'SOL Migration Results',
+        vscode.ViewColumn.Beside,
+        { enableScripts: true }
+    );
+
+    panel.webview.html = generateMigrationResultsHtml(migrationResult);
+}
+
+function generateValidationResultsHtml(validationResult: ValidationResult): string {
+    const errors = validationResult.errors.filter(e => e.severity === 'error');
+    const warnings = validationResult.errors.filter(e => e.severity === 'warning');
+    const info = validationResult.errors.filter(e => e.severity === 'info');
+
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>SOL Validation Results</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; }
+                .header { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+                .stat { padding: 10px; border-radius: 5px; text-align: center; }
+                .success { background: #d4edda; color: #155724; }
+                .warning { background: #fff3cd; color: #856404; }
+                .error { background: #f8d7da; color: #721c24; }
+                .issue { margin: 10px 0; padding: 10px; border-left: 4px solid #ccc; }
+                .issue.error { border-left-color: #dc3545; }
+                .issue.warning { border-left-color: #ffc107; }
+                .issue.info { border-left-color: #17a2b8; }
+                .artifacts { margin-top: 20px; }
+                .artifact { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 3px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🔍 SOL Semantic Validation Results</h1>
+                <p>Validación completada en ${validationResult.processingTime}ms</p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat success">
+                    <h3>${validationResult.artifacts.length}</h3>
+                    <p>Artefactos</p>
+                </div>
+                <div class="stat ${errors.length > 0 ? 'error' : 'success'}">
+                    <h3>${errors.length}</h3>
+                    <p>Errores</p>
+                </div>
+                <div class="stat ${warnings.length > 0 ? 'warning' : 'success'}">
+                    <h3>${warnings.length}</h3>
+                    <p>Advertencias</p>
+                </div>
+                <div class="stat ${info.length > 0 ? 'warning' : 'success'}">
+                    <h3>${info.length}</h3>
+                    <p>Información</p>
+                </div>
+            </div>
+
+            ${errors.length > 0 ? `
+                <h2>❌ Errores Semánticos</h2>
+                ${errors.map(error => `
+                    <div class="issue error">
+                        <strong>Línea ${error.line + 1}:</strong> ${error.message}
+                        <br><small><strong>Sugerencia:</strong> ${error.suggestion || 'No disponible'}</small>
+                        <br><small><strong>Regla:</strong> ${error.ruleId}</small>
+                    </div>
+                `).join('')}
+            ` : ''}
+
+            ${warnings.length > 0 ? `
+                <h2>⚠️ Advertencias</h2>
+                ${warnings.map(warning => `
+                    <div class="issue warning">
+                        <strong>Línea ${warning.line + 1}:</strong> ${warning.message}
+                        <br><small><strong>Sugerencia:</strong> ${warning.suggestion}</small>
+                        <br><small><strong>Regla:</strong> ${warning.ruleId}</small>
+                    </div>
+                `).join('')}
+            ` : ''}
+
+            ${validationResult.warnings.length > 0 ? `
+                <h2>💡 Recomendaciones de Mejora</h2>
+                ${validationResult.warnings.map(warning => `
+                    <div class="issue info">
+                        <strong>Línea ${warning.line + 1}:</strong> ${warning.message}
+                        <br><small><strong>Sugerencia:</strong> ${warning.suggestion}</small>
+                        <br><small><strong>Regla:</strong> ${warning.ruleId}</small>
+                    </div>
+                `).join('')}
+            ` : ''}
+
+            <div class="artifacts">
+                <h2>📋 Artefactos Encontrados</h2>
+                ${validationResult.artifacts.map(artifact => `
+                    <div class="artifact">
+                        <strong>${artifact.type}:${artifact.id}</strong> (Línea ${artifact.line + 1})
+                        ${artifact.references.length > 0 ? `<br><small>Referencias: ${artifact.references.join(', ')}</small>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function generateMigrationResultsHtml(migrationResult: MigrationResult): string {
+    const stats = migrationResult.statistics;
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>SOL Migration Results</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; }
+                .header { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+                .stat { padding: 10px; border-radius: 5px; text-align: center; background: #d4edda; color: #155724; }
+                .change { margin: 10px 0; padding: 10px; border-left: 4px solid #28a745; background: #f8f9fa; }
+                .change-type { font-weight: bold; color: #28a745; }
+                .old-new { margin: 10px 0; font-family: monospace; }
+                .old { background: #f8d7da; padding: 5px; border-radius: 3px; }
+                .new { background: #d4edda; padding: 5px; border-radius: 3px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🔄 SOL Migration Results v2025.07</h1>
+                <p>Migración completada en ${stats.processingTime}ms</p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <h3>${stats.totalArtifacts}</h3>
+                    <p>Artefactos</p>
+                </div>
+                <div class="stat">
+                    <h3>${stats.migratedReferences}</h3>
+                    <p>Referencias Migradas</p>
+                </div>
+                <div class="stat">
+                    <h3>${stats.extractedFoundational}</h3>
+                    <p>Artefactos Fundacionales</p>
+                </div>
+                <div class="stat">
+                    <h3>${stats.fixedFlowSteps}</h3>
+                    <p>Pasos de Flujo</p>
+                </div>
+            </div>
+
+            <h2>📝 Cambios Realizados</h2>
+            ${migrationResult.changes.map(change => `
+                <div class="change">
+                    <div class="change-type">[${change.type.toUpperCase()}]</div>
+                    <strong>Línea ${change.line + 1}:</strong> ${change.description}
+                    <div class="old-new">
+                        <div class="old">- ${change.oldValue}</div>
+                        <div class="new">+ ${change.newValue}</div>
+                    </div>
+                    <small><strong>Regla:</strong> ${change.ruleApplied}</small>
+                </div>
+            `).join('')}
+
+            ${migrationResult.errors.length > 0 ? `
+                <h2>❌ Errores</h2>
+                ${migrationResult.errors.map(error => `<p style="color: red;">${error}</p>`).join('')}
+            ` : ''}
+
+            ${migrationResult.warnings.length > 0 ? `
+                <h2>⚠️ Advertencias</h2>
+                ${migrationResult.warnings.map(warning => `<p style="color: orange;">${warning}</p>`).join('')}
+            ` : ''}
+        </body>
+        </html>
+    `;
 }
