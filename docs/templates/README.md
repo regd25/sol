@@ -1,4 +1,4 @@
-# 🎯 SOL Templates v2.0 - Composición y Anti-Alucinaciones
+# 🎯 SOL Templates v0.1.0 - Composición y Anti-Alucinaciones
 
 ## 🚀 **NUEVA ARQUITECTURA DE TEMPLATES**
 
