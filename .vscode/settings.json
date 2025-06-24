@@ -13,5 +13,6 @@
   "breadcrumbs.enabled": true,
   "markdown.preview.breaks": true,
   "markdown.preview.linkify": true,
-  "markdown.extension.preview.autoShowPreviewToSide": true
+  "markdown.extension.preview.autoShowPreviewToSide": true,
+  "editor.tabSize": 8
 }

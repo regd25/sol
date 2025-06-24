@@ -1,7 +1,7 @@
 # Semantic Operations Language (SOL)
 
 ![SOL Banner](https://img.shields.io/badge/SOL-Semantic%20Operations%20Language-blue)
-![Version](https://img.shields.io/badge/version-2.0.0-green)
+![Version](https://img.shields.io/badge/version-1.0.0--alpha-orange)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 ## 🎯 Introducción
@@ -9,6 +9,22 @@
 **Semantic Operations Language (SOL)** es un lenguaje semántico de propósito organizacional diseñado para modelar de manera explícita la intención, las condiciones de operación y los mecanismos de evaluación de sistemas vivos —ya sean humanos, automatizados o híbridos.
 
 A diferencia de lenguajes formales orientados exclusivamente a la ejecución, SOL prioriza la representación del significado operativo y contextual de un sistema, actuando como una capa intermedia entre la estrategia organizacional y la automatización técnica.
+
+### 🚀 Estado del Proyecto - Alpha Release
+
+Esta versión **1.0.0-alpha** incluye:
+
+- ✅ **12 Artefactos SOL** completamente definidos con templates
+- ✅ **VS Code Extension** con resaltado, validación y navegación semántica  
+- ✅ **Language Server Protocol** para soporte avanzado de lenguaje
+- ✅ **Arquitectura Composicional** con bloques semánticos reutilizables
+- ✅ **3 Ejemplos Empresariales** reales implementados
+- ✅ **Documentación Completa** con guías y mejores prácticas
+
+**Próximos hitos:**
+- 🔄 Test coverage completo y CI/CD pipeline
+- 🔄 Herramientas de migración y validación avanzada  
+- 🔄 Integración con sistemas de gestión empresarial
 
 ## 🧩 Artefactos Semánticos Fundamentales
 
@@ -189,6 +205,53 @@ Process:
 - **[Ejemplos Prácticos](docs/examples/)**: Implementaciones en contextos reales
 - **[Mejores Prácticas](docs/best-practices.md)**: Recomendaciones de uso
 
+## 🔧 Instalación y Uso Rápido
+
+### VS Code Extension
+
+1. Buscar "SOL - Semantic Operations Language Support" en VS Code Marketplace
+2. Instalar la extensión
+3. Abrir cualquier archivo `.sol` para obtener soporte completo
+
+### Desarrollo Local
+
+```bash
+# Clonar repositorio
+git clone https://github.com/regd25/sol.git
+cd sol
+
+# Instalar extensión VS Code
+cd extension
+npm install
+npm run compile
+```
+
+### Crear tu Primer Archivo SOL
+
+```sol
+# SOL - Semantic Operations Language
+# Version: v2025.07
+
+Vision:
+  - id: MiPrimeraVision
+    content: "Transformar mi organización con claridad semántica"
+    description: "Vision estratégica inicial"
+
+Actor:
+  - id: ResponsableProceso
+    type: "Humano"
+    capabilities: ["Gestión de Procesos"]
+
+Process:
+  - id: MiPrimerProceso
+    vision: Vision:MiPrimeraVision
+    description: "Proceso de ejemplo"
+    steps:
+      - Actor:ResponsableProceso → "Analizar situación actual"
+      - Actor:ResponsableProceso → "Implementar mejoras"
+    endCondition: "Proceso optimizado y documentado"
+```
+
 ## 🤝 Contribución
 
 SOL es un proyecto en constante evolución. Las contribuciones son bienvenidas siguiendo estos principios:
@@ -198,11 +261,16 @@ SOL es un proyecto en constante evolución. Las contribuciones son bienvenidas s
 3. **Simplicidad**: Empezar simple y refactorizar cuando sea necesario
 4. **Documentación**: Todo cambio debe incluir ejemplos claros
 
+### Roadmap Alpha → Beta
+
+- [ ] **Testing Infrastructure**: Completar coverage de tests
+- [ ] **Migration Tools**: Herramientas para migrar documentos legacy
+- [ ] **Advanced Validation**: Validación semántica profunda
+- [ ] **Export Formats**: Soporte para JSON-LD, RDF/Turtle
+- [ ] **Integration APIs**: Conectores para sistemas empresariales
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detalles.
 
 ---
-
-**Versión:** 2.0.0 - Artefactos Semánticos Compositivos  
-**¿Tienes preguntas?** Revisa la [documentación completa](docs/) o abre un [issue](https://github.com/tu-usuario/sol/issues) para discutir casos de uso específicos. 

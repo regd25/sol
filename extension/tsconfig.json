@@ -2,7 +2,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": [
-      "es6"
+      "es6",
+      "es2020"
     ],
     "module": "commonjs",
     "outDir": "out",
@@ -10,9 +11,25 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es6"
+    "target": "es6",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "declarationMap": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vscode", "node"]
   },
   "include": [
-    "src"
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    "out/**/*",
+    "src/test/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

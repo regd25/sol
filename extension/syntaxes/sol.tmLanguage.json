@@ -67,7 +67,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "\\b(Vision|Domain|Concept|Policy|Process|Actor|Indicator|Result|Signal|Observation|Authority|Protocol)\\b",
+          "match": "\\b(Vision|Domain|Concept|Policy|Process|Actor|Indicator|Result|Signal|Observation|Authority|Protocol|Area)\\b",
           "name": "keyword.control.sol.artifact"
         },
         {
@@ -106,7 +106,7 @@
           }
         },
         {
-          "match": "\\((Policy|Process|Actor|Vision|Domain):\\s*([A-Z][a-zA-Z0-9_]*)\\)",
+          "match": "\\((Policy|Process|Actor|Vision|Domain|Area):\\s*([A-Z][a-zA-Z0-9_]*)\\)",
           "captures": {
             "1": {
               "name": "keyword.control.sol.artifact"

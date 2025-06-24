@@ -22,66 +22,66 @@ class SolFormatter {
             tabSize: 2,
             trimTrailingWhitespace: true,
             insertFinalNewline: true,
-            trimFinalNewlines: true
+            trimFinalNewlines: true,
         };
         this.formattingRules = [
             // SOL header
             {
                 pattern: /^#\s*SOL\s*-\s*Semantic\s*Operations\s*Language/,
                 indentLevel: 0,
-                formatFunction: (line) => line.trim()
+                formatFunction: (line) => line.trim(),
             },
             // Top-level artifact types
             {
                 pattern: /^(Vision|Domain|Concept|Policy|Process|Actor|Indicator|Result|Signal|Observation|Authority|Protocol):\s*$/,
-                indentLevel: 0
+                indentLevel: 0,
             },
             // Artifact list items
             {
                 pattern: /^-\s*id:\s*[A-Za-z0-9_]+/,
                 indentLevel: 1,
-                formatFunction: (line) => this.formatArtifactListItem(line)
+                formatFunction: (line) => this.formatArtifactListItem(line),
             },
             // Single artifact ID
             {
                 pattern: /^id:\s*[A-Za-z0-9_]+/,
                 indentLevel: 1,
-                formatFunction: (line) => this.formatField(line)
+                formatFunction: (line) => this.formatField(line),
             },
             // Field definitions
             {
                 pattern: /^(content|description|vision|premise|measurement|unit|goal|author|date|language|type|domain|version|reason|timestamp):\s*/,
                 indentLevel: -1,
-                formatFunction: (line) => this.formatField(line)
+                formatFunction: (line) => this.formatField(line),
             },
             // Array field headers
             {
                 pattern: /^(actors|steps|tags|capabilities|indicators|policies|processes):\s*$/,
-                indentLevel: -1 // Dynamic based on context
+                indentLevel: -1, // Dynamic based on context
             },
             // Array items
             {
                 pattern: /^-\s+/,
                 indentLevel: -1,
-                formatFunction: (line) => this.formatArrayItem(line)
-            }
+                formatFunction: (line) => this.formatArrayItem(line),
+            },
         ];
     }
     formatDocument(text, options) {
         const opts = Object.assign(Object.assign({}, this.defaultOptions), options);
-        const lines = text.split('\n');
+        const lines = text.split("\n");
         const formattedLines = [];
         let currentContext = this.createFormattingContext();
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             const trimmedLine = line.trim();
             // Handle empty lines
-            if (trimmedLine === '') {
-                formattedLines.push('');
+            if (trimmedLine === "") {
+                formattedLines.push("");
                 continue;
             }
             // Handle comments
-            if (trimmedLine.startsWith('#')) {
+            if (trimmedLine.startsWith("#")) {
                 const indent = this.getIndent(currentContext.commentIndentLevel, opts);
                 formattedLines.push(indent + trimmedLine);
                 continue;
@@ -92,16 +92,16 @@ class SolFormatter {
             // Update context based on current line
             currentContext = this.updateContext(currentContext, trimmedLine);
         }
-        let result = formattedLines.join('\n');
+        let result = formattedLines.join("\n");
         // Apply final formatting options
         if (opts.trimTrailingWhitespace) {
             result = this.trimTrailingWhitespace(result);
         }
         if (opts.trimFinalNewlines) {
-            result = result.replace(/\n+$/, '');
+            result = result.replace(/\n+$/, "");
         }
-        if (opts.insertFinalNewline && !result.endsWith('\n')) {
-            result += '\n';
+        if (opts.insertFinalNewline && !result.endsWith("\n")) {
+            result += "\n";
         }
         return result;
     }
@@ -111,7 +111,7 @@ class SolFormatter {
             insideArtifactList: false,
             insideFieldList: false,
             commentIndentLevel: 0,
-            lastArtifactType: null
+            lastArtifactType: null,
         };
     }
     applyFormattingRules(line, context, options) {
@@ -123,7 +123,9 @@ class SolFormatter {
                     indentLevel = this.calculateDynamicIndent(line, context);
                 }
                 const indent = this.getIndent(indentLevel, options);
-                const formattedContent = rule.formatFunction ? rule.formatFunction(line) : line;
+                const formattedContent = rule.formatFunction
+                    ? rule.formatFunction(line)
+                    : line;
                 return indent + formattedContent;
             }
         }
@@ -154,7 +156,7 @@ class SolFormatter {
             newContext.insideArtifactList = false;
             newContext.insideFieldList = false;
             newContext.commentIndentLevel = 0;
-            newContext.lastArtifactType = line.replace(':', '').trim();
+            newContext.lastArtifactType = line.replace(":", "").trim();
         }
         // Artifact list items
         else if (line.match(/^-\s*id:\s*[A-Za-z0-9_]+/)) {
@@ -179,17 +181,17 @@ class SolFormatter {
     }
     getIndent(level, options) {
         if (options.insertSpaces) {
-            return ' '.repeat(level * options.tabSize);
+            return " ".repeat(level * options.tabSize);
         }
         else {
-            return '\t'.repeat(level);
+            return "\t".repeat(level);
         }
     }
     formatField(line) {
         const match = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
         if (match) {
             const [, field, value] = match;
-            if (value.trim() === '') {
+            if (value.trim() === "") {
                 return `${field}:`;
             }
             return `${field}: ${value.trim()}`;
@@ -213,12 +215,15 @@ class SolFormatter {
         return line;
     }
     trimTrailingWhitespace(text) {
-        return text.split('\n').map(line => line.replace(/\s+$/, '')).join('\n');
+        return text
+            .split("\n")
+            .map((line) => line.replace(/\s+$/, ""))
+            .join("\n");
     }
     // Utility method for validating SOL document structure
     validateStructure(text) {
         const errors = [];
-        const lines = text.split('\n');
+        const lines = text.split("\n");
         let hasSOLHeader = false;
         let hasArtifacts = false;
         for (let i = 0; i < lines.length; i++) {
@@ -231,14 +236,14 @@ class SolFormatter {
             }
         }
         if (!hasSOLHeader) {
-            errors.push('Missing SOL header: # SOL - Semantic Operations Language');
+            errors.push("Missing SOL header: # SOL - Semantic Operations Language");
         }
         if (!hasArtifacts) {
-            errors.push('No SOL artifacts found in document');
+            errors.push("No SOL artifacts found in document");
         }
         return {
             isValid: errors.length === 0,
-            errors
+            errors,
         };
     }
 }

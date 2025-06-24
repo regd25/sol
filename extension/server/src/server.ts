@@ -1,14 +1,14 @@
 /**
  * SOL Language Server
- * 
+ *
  * Language server implementation for Semantic Operations Language following SOL principles:
  * - Semantic Coherence: Maintaining narrative integrity across artifacts
  * - Traceability: Enabling navigation between related artifacts
  * - Simplicity: Clean, understandable language support
  * - Documentation: Comprehensive hover and completion information
- * 
+ *
  * Based on the SOL project: https://github.com/regd25/sol
- * 
+ *
  * @author Randy Gala <randy@hexy.dev>
  * @license MIT
  */
@@ -78,7 +78,7 @@ connection.onInitialize((params: InitializeParams) => {
       // Tell the client that the server supports code completion
       completionProvider: {
         resolveProvider: true,
-        triggerCharacters: [':']
+        triggerCharacters: [":"],
       },
       // Tell the client that the server supports 'go to definition'
       definitionProvider: true,
@@ -130,15 +130,45 @@ interface SolArtifact {
 
 // SOL Artifact types following SOL principles
 const SOL_ARTIFACT_TYPES = [
-  'Vision', 'Domain', 'Concept', 'Policy', 'Process', 'Actor', 
-  'Indicator', 'Result', 'Signal', 'Observation', 'Authority', 'Protocol'
+  "Vision",
+  "Domain",
+  "Concept",
+  "Policy",
+  "Process",
+  "Actor",
+  "Indicator",
+  "Result",
+  "Signal",
+  "Observation",
+  "Authority",
+  "Protocol",
+  "Area",
 ]
 
 const SOL_FIELDS = [
-  'id', 'content', 'description', 'steps', 'actors', 'type', 'vision', 
-  'premise', 'measurement', 'unit', 'goal', 'issuedBy', 'reason', 
-  'timestamp', 'author', 'date', 'language', 'tags', 'capabilities', 
-  'domain', 'indicators', 'policies', 'processes'
+  "id",
+  "content",
+  "description",
+  "steps",
+  "actors",
+  "type",
+  "vision",
+  "premise",
+  "measurement",
+  "unit",
+  "goal",
+  "issuedBy",
+  "reason",
+  "timestamp",
+  "author",
+  "date",
+  "language",
+  "tags",
+  "capabilities",
+  "domain",
+  "indicators",
+  "policies",
+  "processes",
 ]
 
 function parseSolDocument(document: TextDocument): SolArtifact[] {
@@ -152,7 +182,9 @@ function parseSolDocument(document: TextDocument): SolArtifact[] {
     const line = lines[i]
 
     // Detect SOL header
-    const headerMatch = line.match(/^#\s*SOL\s*-\s*Semantic\s*Operations\s*Language/)
+    const headerMatch = line.match(
+      /^#\s*SOL\s*-\s*Semantic\s*Operations\s*Language/
+    )
     if (headerMatch) {
       continue
     }
@@ -176,6 +208,23 @@ function parseSolDocument(document: TextDocument): SolArtifact[] {
     const idMatch =
       line.match(/^\s*-\s*id:\s*([a-zA-Z0-9_]+)\s*$/) ||
       line.match(/^\s*id:\s*([a-zA-Z0-9_]+)\s*$/)
+
+    // Handle Area artifacts which have id on a new line and no leading dash
+    if (
+      currentArtifactType === "Area" &&
+      line.match(/^\s*id:\s*([a-zA-Z0-9_]+)\s*$/)
+    ) {
+      const id = line.match(/^\s*id:\s*([a-zA-Z0-9_]+)\s*$/)?.[1]
+      if (!id) {
+        continue
+      }
+      if (currentArtifact) {
+        currentArtifact.id = id
+        artifacts.push(currentArtifact as SolArtifact)
+        currentArtifact = null // Reset for next artifact
+      }
+      continue
+    }
 
     if (idMatch && currentArtifactType) {
       const id = idMatch[1]
@@ -215,12 +264,20 @@ function parseSolDocument(document: TextDocument): SolArtifact[] {
   return artifacts
 }
 
-function parseArtifactFields(artifact: SolArtifact, lines: string[], startLine: number) {
+function parseArtifactFields(
+  artifact: SolArtifact,
+  lines: string[],
+  startLine: number
+) {
   for (let i = startLine + 1; i < lines.length; i++) {
     const line = lines[i]
-    
+
     // Stop if we hit another artifact or empty line
-    if (line.match(/^\s*-\s*id:/) || line.match(/^[a-zA-Z_]+:\s*$/) || line.trim() === '') {
+    if (
+      line.match(/^\s*-\s*id:/) ||
+      line.match(/^[a-zA-Z_]+:\s*$/) ||
+      line.trim() === ""
+    ) {
       break
     }
 
@@ -246,7 +303,7 @@ function parseArtifactFields(artifact: SolArtifact, lines: string[], startLine: 
         const actorMatch = actorLine.match(/^\s*-\s*([a-zA-Z0-9_]+)/)
         if (actorMatch) {
           artifact.actors.push(actorMatch[1])
-        } else if (actorLine.trim() !== '' && !actorLine.match(/^\s*-/)) {
+        } else if (actorLine.trim() !== "" && !actorLine.match(/^\s*-/)) {
           break
         }
       }
@@ -262,7 +319,7 @@ function parseArtifactFields(artifact: SolArtifact, lines: string[], startLine: 
         const stepMatch = stepLine.match(/^\s*-\s*(.+)/)
         if (stepMatch) {
           artifact.steps.push(stepMatch[1])
-        } else if (stepLine.trim() !== '' && !stepLine.match(/^\s*-/)) {
+        } else if (stepLine.trim() !== "" && !stepLine.match(/^\s*-/)) {
           break
         }
       }
@@ -301,25 +358,25 @@ connection.onCompletion((params: CompletionParams): CompletionItem[] => {
 
   // Provide SOL artifact type completions
   if (line.match(/^\s*$/)) {
-    SOL_ARTIFACT_TYPES.forEach(type => {
+    SOL_ARTIFACT_TYPES.forEach((type) => {
       completions.push({
         label: type,
         kind: CompletionItemKind.Class,
         detail: `SOL ${type} artifact`,
         documentation: `Create a new ${type} artifact following SOL principles`,
-        insertText: `${type}:\n  - id: ${type}Example\n    description: ""\n    vision: `
+        insertText: `${type}:\n  - id: ${type}Example\n    description: ""\n    vision: `,
       })
     })
   }
 
   // Provide field completions
   if (line.match(/^\s*-?\s*$/)) {
-    SOL_FIELDS.forEach(field => {
+    SOL_FIELDS.forEach((field) => {
       completions.push({
         label: field,
         kind: CompletionItemKind.Field,
         detail: `SOL ${field} field`,
-        insertText: `${field}: `
+        insertText: `${field}: `,
       })
     })
   }
@@ -328,14 +385,16 @@ connection.onCompletion((params: CompletionParams): CompletionItem[] => {
   if (line.match(/^\s*(vision|domain|actors|issuedBy):\s*$/)) {
     const artifacts = parseSolDocument(document)
     const fieldName = line.match(/^\s*(\w+):/)?.[1]
-    
-    artifacts.forEach(artifact => {
+
+    artifacts.forEach((artifact) => {
       if (shouldSuggestArtifact(fieldName, artifact.type)) {
         completions.push({
           label: artifact.id,
           kind: CompletionItemKind.Reference,
-          detail: `${artifact.type}: ${artifact.description || artifact.content || ''}`,
-          documentation: `Reference to ${artifact.type} artifact "${artifact.id}"`
+          detail: `${artifact.type}: ${
+            artifact.description || artifact.content || ""
+          }`,
+          documentation: `Reference to ${artifact.type} artifact "${artifact.id}"`,
         })
       }
     })
@@ -344,15 +403,18 @@ connection.onCompletion((params: CompletionParams): CompletionItem[] => {
   return completions
 })
 
-function shouldSuggestArtifact(fieldName: string | undefined, artifactType: string): boolean {
+function shouldSuggestArtifact(
+  fieldName: string | undefined,
+  artifactType: string
+): boolean {
   switch (fieldName) {
-    case 'vision':
-      return artifactType === 'Vision'
-    case 'domain':
-      return artifactType === 'Domain'
-    case 'actors':
-    case 'issuedBy':
-      return artifactType === 'Actor'
+    case "vision":
+      return artifactType === "Vision"
+    case "domain":
+      return artifactType === "Domain"
+    case "actors":
+    case "issuedBy":
+      return artifactType === "Actor"
     default:
       return true
   }
@@ -374,38 +436,38 @@ connection.onHover((params: HoverParams): Hover | null => {
   }
 
   const artifacts = parseSolDocument(document)
-  const artifact = artifacts.find(art => art.id === word)
+  const artifact = artifacts.find((art) => art.id === word)
 
   if (artifact) {
     let contents = `**${artifact.type}**: ${artifact.id}\n\n`
-    
+
     if (artifact.description) {
       contents += `**Description**: ${artifact.description}\n\n`
     }
-    
+
     if (artifact.content) {
       contents += `**Content**: ${artifact.content}\n\n`
     }
-    
+
     if (artifact.vision) {
       contents += `**Vision**: ${artifact.vision}\n\n`
     }
-    
+
     if (artifact.actors && artifact.actors.length > 0) {
-      contents += `**Actors**: ${artifact.actors.join(', ')}\n\n`
+      contents += `**Actors**: ${artifact.actors.join(", ")}\n\n`
     }
-    
+
     if (artifact.steps && artifact.steps.length > 0) {
       contents += `**Steps**: ${artifact.steps.length} steps\n\n`
     }
-    
+
     contents += `*Following SOL principles: Semantic Coherence, Traceability, Simplicity, Documentation*`
 
     return {
       contents: {
-        kind: 'markdown',
-        value: contents
-      }
+        kind: "markdown",
+        value: contents,
+      },
     }
   }
 
@@ -413,9 +475,9 @@ connection.onHover((params: HoverParams): Hover | null => {
   if (SOL_ARTIFACT_TYPES.includes(word)) {
     return {
       contents: {
-        kind: 'markdown',
-        value: `**SOL Artifact Type**: ${word}\n\nA core SOL artifact that maintains semantic coherence and strategic traceability.`
-      }
+        kind: "markdown",
+        value: `**SOL Artifact Type**: ${word}\n\nA core SOL artifact that maintains semantic coherence and strategic traceability.`,
+      },
     }
   }
 
@@ -423,9 +485,9 @@ connection.onHover((params: HoverParams): Hover | null => {
   if (SOL_FIELDS.includes(word)) {
     return {
       contents: {
-        kind: 'markdown',
-        value: `**SOL Field**: ${word}\n\nA structured field that contributes to SOL's semantic operations and narrative integrity.`
-      }
+        kind: "markdown",
+        value: `**SOL Field**: ${word}\n\nA structured field that contributes to SOL's semantic operations and narrative integrity.`,
+      },
     }
   }
 
@@ -433,34 +495,36 @@ connection.onHover((params: HoverParams): Hover | null => {
 })
 
 // Document symbols provider for SOL artifacts
-connection.onDocumentSymbol((params: DocumentSymbolParams): SymbolInformation[] => {
-  const document = documents.get(params.textDocument.uri)
-  if (!document) {
-    return []
-  }
+connection.onDocumentSymbol(
+  (params: DocumentSymbolParams): SymbolInformation[] => {
+    const document = documents.get(params.textDocument.uri)
+    if (!document) {
+      return []
+    }
 
-  const artifacts = parseSolDocument(document)
-  return artifacts.map(artifact => ({
-    name: `${artifact.id} (${artifact.type})`,
-    kind: getSymbolKind(artifact.type),
-    location: artifact.location,
-    containerName: artifact.vision ? `Vision: ${artifact.vision}` : undefined
-  }))
-})
+    const artifacts = parseSolDocument(document)
+    return artifacts.map((artifact) => ({
+      name: `${artifact.id} (${artifact.type})`,
+      kind: getSymbolKind(artifact.type),
+      location: artifact.location,
+      containerName: artifact.vision ? `Vision: ${artifact.vision}` : undefined,
+    }))
+  }
+)
 
 function getSymbolKind(artifactType: string): SymbolKind {
   switch (artifactType) {
-    case 'Vision':
+    case "Vision":
       return SymbolKind.Namespace
-    case 'Domain':
+    case "Domain":
       return SymbolKind.Module
-    case 'Process':
+    case "Process":
       return SymbolKind.Function
-    case 'Actor':
+    case "Actor":
       return SymbolKind.Class
-    case 'Policy':
+    case "Policy":
       return SymbolKind.Interface
-    case 'Indicator':
+    case "Indicator":
       return SymbolKind.Variable
     default:
       return SymbolKind.Object
@@ -486,24 +550,32 @@ connection.onDefinition((params: DefinitionParams): Location | null => {
 
   // Enhanced reference detection with SOL semantic awareness
   const referencePatterns = [
-    { pattern: /vision:\s*([a-zA-Z0-9_]+)/, type: 'Vision' },
-    { pattern: /domain:\s*([a-zA-Z0-9_]+)/, type: 'Domain' },
-    { pattern: /actors:\s*-\s*([a-zA-Z0-9_]+)/, type: 'Actor' },
-    { pattern: /issuedBy:\s*([a-zA-Z0-9_]+)/, type: 'Actor' },
-    { pattern: /\(Policy:\s*([a-zA-Z0-9_]+)\)/, type: 'Policy' },
-    { pattern: /\(Process:\s*([a-zA-Z0-9_]+)\)/, type: 'Process' },
-    { pattern: /\(Actor:\s*([a-zA-Z0-9_]+)\)/, type: 'Actor' },
-    { pattern: /\(Vision:\s*([a-zA-Z0-9_]+)\)/, type: 'Vision' },
-    { pattern: /\(Domain:\s*([a-zA-Z0-9_]+)\)/, type: 'Domain' },
+    { pattern: /vision:\s*([a-zA-Z0-9_]+)/, type: "Vision" },
+    { pattern: /domain:\s*([a-zA-Z0-9_]+)/, type: "Domain" },
+    { pattern: /actors:\s*-\s*([a-zA-Z0-9_]+)/, type: "Actor" },
+    { pattern: /issuedBy:\s*([a-zA-Z0-9_]+)/, type: "Actor" },
+    { pattern: /\(Policy:\s*([a-zA-Z0-9_]+)\)/, type: "Policy" },
+    { pattern: /\(Process:\s*([a-zA-Z0-9_]+)\)/, type: "Process" },
+    { pattern: /\(Actor:\s*([a-zA-Z0-9_]+)\)/, type: "Actor" },
+    { pattern: /\(Vision:\s*([a-zA-Z0-9_]+)\)/, type: "Vision" },
+    { pattern: /\(Domain:\s*([a-zA-Z0-9_]+)\)/, type: "Domain" },
   ]
 
   for (const refPattern of referencePatterns) {
     const refMatch = line.match(refPattern.pattern)
     if (refMatch && refMatch[1] === word) {
-      const wordStartInLine = line.indexOf(word, refMatch.index! + refMatch[0].indexOf(word))
-    if (position.character >= wordStartInLine && position.character <= wordStartInLine + word.length) {
-        const definition = artifacts.find(art => art.id === word && art.type === refPattern.type)
-      if (definition) {
+      const wordStartInLine = line.indexOf(
+        word,
+        refMatch.index! + refMatch[0].indexOf(word)
+      )
+      if (
+        position.character >= wordStartInLine &&
+        position.character <= wordStartInLine + word.length
+      ) {
+        const definition = artifacts.find(
+          (art) => art.id === word && art.type === refPattern.type
+        )
+        if (definition) {
           return definition.location
         }
       }
@@ -511,11 +583,21 @@ connection.onDefinition((params: DefinitionParams): Location | null => {
   }
 
   // Check for actor execution references (e.g., "ActorID ->")
-  const actorExecutionRefMatch = line.match(/^\s*([a-zA-Z0-9_]+)(?:\s*\([^)]*\))?\s*[->→]/)
+  const actorExecutionRefMatch = line.match(
+    /^\s*([a-zA-Z0-9_]+)(?:\s*\([^)]*\))?\s*[->→]/
+  )
   if (actorExecutionRefMatch && actorExecutionRefMatch[1] === word) {
-    const wordStartInLine = line.indexOf(word, actorExecutionRefMatch.index! + actorExecutionRefMatch[0].indexOf(word))
-    if (position.character >= wordStartInLine && position.character <= wordStartInLine + word.length) {
-      const definition = artifacts.find(art => art.id === word && art.type === 'Actor')
+    const wordStartInLine = line.indexOf(
+      word,
+      actorExecutionRefMatch.index! + actorExecutionRefMatch[0].indexOf(word)
+    )
+    if (
+      position.character >= wordStartInLine &&
+      position.character <= wordStartInLine + word.length
+    ) {
+      const definition = artifacts.find(
+        (art) => art.id === word && art.type === "Actor"
+      )
       if (definition) {
         return definition.location
       }
@@ -523,7 +605,7 @@ connection.onDefinition((params: DefinitionParams): Location | null => {
   }
 
   // Generic artifact reference lookup
-  const definition = artifacts.find(art => art.id === word)
+  const definition = artifacts.find((art) => art.id === word)
   if (definition) {
     return definition.location
   }
@@ -532,57 +614,61 @@ connection.onDefinition((params: DefinitionParams): Location | null => {
 })
 
 // SOL Document Formatter following SOL principles
-connection.onDocumentFormatting((params: DocumentFormattingParams): TextEdit[] => {
-  const document = documents.get(params.textDocument.uri)
-  if (!document) {
-    return []
-  }
+connection.onDocumentFormatting(
+  (params: DocumentFormattingParams): TextEdit[] => {
+    const document = documents.get(params.textDocument.uri)
+    if (!document) {
+      return []
+    }
 
-  return formatSolDocument(document, params.options)
-})
+    return formatSolDocument(document, params.options)
+  }
+)
 
 // SOL Range Formatter
-connection.onDocumentRangeFormatting((params: DocumentRangeFormattingParams): TextEdit[] => {
-  const document = documents.get(params.textDocument.uri)
-  if (!document) {
-    return []
-  }
+connection.onDocumentRangeFormatting(
+  (params: DocumentRangeFormattingParams): TextEdit[] => {
+    const document = documents.get(params.textDocument.uri)
+    if (!document) {
+      return []
+    }
 
-  return formatSolDocumentRange(document, params.range, params.options)
-})
+    return formatSolDocumentRange(document, params.range, params.options)
+  }
+)
 
 function formatSolDocument(document: TextDocument, options: any): TextEdit[] {
   const text = document.getText()
-  const lines = text.split('\n')
+  const lines = text.split("\n")
   const formattedLines: string[] = []
-  
+
   let currentIndentLevel = 0
   let insideArtifactList = false
   let insideFieldList = false
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     const trimmedLine = line.trim()
-    
+
     // Skip empty lines but preserve them
-    if (trimmedLine === '') {
-      formattedLines.push('')
+    if (trimmedLine === "") {
+      formattedLines.push("")
       continue
     }
-    
+
     // SOL header - no indentation
     if (trimmedLine.match(/^#\s*SOL\s*-\s*Semantic\s*Operations\s*Language/)) {
       formattedLines.push(trimmedLine)
       continue
     }
-    
+
     // Comments - preserve original indentation context
-    if (trimmedLine.startsWith('#')) {
+    if (trimmedLine.startsWith("#")) {
       const indent = getIndentForComment(currentIndentLevel, options)
       formattedLines.push(indent + trimmedLine)
       continue
     }
-    
+
     // Top-level artifact types (Vision:, Domain:, etc.)
     if (trimmedLine.match(/^[A-Z][a-zA-Z]*:\s*$/)) {
       currentIndentLevel = 0
@@ -591,7 +677,7 @@ function formatSolDocument(document: TextDocument, options: any): TextEdit[] {
       formattedLines.push(trimmedLine)
       continue
     }
-    
+
     // Artifact list items (- id: ArtifactName)
     if (trimmedLine.match(/^-\s*id:\s*[A-Za-z0-9_]+/)) {
       currentIndentLevel = 1
@@ -602,7 +688,7 @@ function formatSolDocument(document: TextDocument, options: any): TextEdit[] {
       formattedLines.push(indent + formattedContent)
       continue
     }
-    
+
     // Single artifact (id: ArtifactName)
     if (trimmedLine.match(/^id:\s*[A-Za-z0-9_]+/)) {
       currentIndentLevel = 1
@@ -613,25 +699,33 @@ function formatSolDocument(document: TextDocument, options: any): TextEdit[] {
       formattedLines.push(indent + formattedContent)
       continue
     }
-    
+
     // Field definitions within artifacts
-    if (trimmedLine.match(/^(content|description|vision|premise|measurement|unit|goal|author|date|language|type|domain|version|reason|timestamp):\s*/)) {
+    if (
+      trimmedLine.match(
+        /^(content|description|vision|premise|measurement|unit|goal|author|date|language|type|domain|version|reason|timestamp):\s*/
+      )
+    ) {
       const fieldIndent = insideArtifactList ? 2 : 1
       const indent = getIndent(fieldIndent, options)
       const formattedContent = formatField(trimmedLine)
       formattedLines.push(indent + formattedContent)
       continue
     }
-    
+
     // Array field headers (actors:, steps:, etc.)
-    if (trimmedLine.match(/^(actors|steps|tags|capabilities|indicators|policies|processes):\s*$/)) {
+    if (
+      trimmedLine.match(
+        /^(actors|steps|tags|capabilities|indicators|policies|processes):\s*$/
+      )
+    ) {
       const fieldIndent = insideArtifactList ? 2 : 1
       const indent = getIndent(fieldIndent, options)
       formattedLines.push(indent + trimmedLine)
       insideFieldList = true
       continue
     }
-    
+
     // Array items
     if (trimmedLine.match(/^-\s+/) && insideFieldList) {
       const listIndent = insideArtifactList ? 3 : 2
@@ -640,64 +734,78 @@ function formatSolDocument(document: TextDocument, options: any): TextEdit[] {
       formattedLines.push(indent + formattedContent)
       continue
     }
-    
+
     // Default formatting - preserve structure but clean whitespace
     const indent = getIndent(currentIndentLevel, options)
     formattedLines.push(indent + trimmedLine)
   }
-  
-  const formattedText = formattedLines.join('\n')
-  
+
+  const formattedText = formattedLines.join("\n")
+
   // Return single edit replacing entire document
-  return [{
-    range: Range.create(
-      Position.create(0, 0),
-      Position.create(lines.length, 0)
-    ),
-    newText: formattedText
-  }]
+  return [
+    {
+      range: Range.create(
+        Position.create(0, 0),
+        Position.create(lines.length, 0)
+      ),
+      newText: formattedText,
+    },
+  ]
 }
 
-function formatSolDocumentRange(document: TextDocument, range: Range, options: any): TextEdit[] {
+function formatSolDocumentRange(
+  document: TextDocument,
+  range: Range,
+  options: any
+): TextEdit[] {
   // For range formatting, we'll format the selected lines while maintaining context
   const text = document.getText(range)
   const fullText = document.getText()
-  const lines = fullText.split('\n')
-  
+  const lines = fullText.split("\n")
+
   const startLine = range.start.line
   const endLine = range.end.line
-  
+
   // Create a mini-document with just the selected range plus context
-  const contextLines = lines.slice(Math.max(0, startLine - 2), Math.min(lines.length, endLine + 3))
+  const contextLines = lines.slice(
+    Math.max(0, startLine - 2),
+    Math.min(lines.length, endLine + 3)
+  )
   const contextDocument = {
-    getText: () => contextLines.join('\n')
+    getText: () => contextLines.join("\n"),
   } as TextDocument
-  
+
   // Format the context
   const contextFormatted = formatSolDocument(contextDocument, options)
-  
+
   if (contextFormatted.length === 0) {
     return []
   }
-  
+
   // Extract just the selected portion from the formatted context
-  const formattedLines = contextFormatted[0].newText.split('\n')
-  const selectedFormattedLines = formattedLines.slice(2, formattedLines.length - 3)
-  
-  return [{
-    range: range,
-    newText: selectedFormattedLines.join('\n')
-  }]
+  const formattedLines = contextFormatted[0].newText.split("\n")
+  const selectedFormattedLines = formattedLines.slice(
+    2,
+    formattedLines.length - 3
+  )
+
+  return [
+    {
+      range: range,
+      newText: selectedFormattedLines.join("\n"),
+    },
+  ]
 }
 
 function getIndent(level: number, options: any): string {
   const useSpaces = options.insertSpaces !== false
   const tabSize = options.tabSize || 2
-  
+
   if (useSpaces) {
-    return ' '.repeat(level * tabSize)
+    return " ".repeat(level * tabSize)
   } else {
-    return '\t'.repeat(level)
+    return "\t".repeat(level)
   }
 }
 
@@ -711,7 +819,7 @@ function formatField(line: string): string {
   const match = line.match(/^([a-zA-Z_]+):\s*(.*)$/)
   if (match) {
     const [, field, value] = match
-    if (value.trim() === '') {
+    if (value.trim() === "") {
       return `${field}:`
     }
     return `${field}: ${value.trim()}`
