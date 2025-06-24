@@ -90,43 +90,39 @@ Estos son los bloques semánticos que pueden componer cualquier artefacto según
 **¿Qué es?** Regla obligatoria o restricción vigente dentro del área o empresa.  
 **Ejemplo:** "Todos los usuarios deben autenticarse mediante doble factor."
 
-### 4. **Guideline**
-**¿Qué es?** Lineamiento o recomendación flexible para guiar acciones.  
-**Ejemplo:** "Se recomienda realizar revisiones de código en pares."
-
-### 5. **Area**
+### 4. **Area**
 **¿Qué es?** Espacio temático, departamento o dominio de aplicación donde viven procesos, reglas y actores.  
 **Ejemplo:** "Recursos Humanos", "Logística", "Tecnología".
 
-### 6. **Concept**
+### 5. **Concept**
 **¿Qué es?** Unidad de significado fundamental para el área o el negocio; un término clave, entidad o glosario.  
 **Ejemplo:** "Cliente", "Factura", "Proyecto".
 
-### 7. **Actor**
+### 6. **Actor**
 **¿Qué es?** Agente que participa en procesos: persona, equipo, sistema, IA, cliente, proveedor, etc.  
 **Ejemplo:** "Usuario final", "Administrador", "AI Verifier", "Sistema de pagos".
 
-### 8. **Process**
+### 7. **Process**
 **¿Qué es?** Flujo de actividades, etapas o pasos para transformar insumos en resultados.  
 **Ejemplo:** "Onboarding de empleados", "Aprobación de crédito".
 
-### 9. **Procedure**
+### 8. **Procedure**
 **¿Qué es?** Secuencia detallada de instrucciones o pasos concretos para ejecutar una tarea específica.  
 **Ejemplo:** "Procedimiento para alta de proveedores", "Procedimiento de recuperación de contraseña".
 
-### 10. **Event**
+### 9. **Event**
 **¿Qué es?** Suceso relevante que ocurre en el sistema y puede detonar acciones, procesos o notificaciones.  
 **Ejemplo:** "Nueva solicitud registrada", "Fallo en el sistema".
 
-### 11. **Result**
+### 10. **Result**
 **¿Qué es?** Estado alcanzado, producto, logro o salida específica después de ejecutar un proceso, procedimiento o acción.  
 **Ejemplo:** "Cuenta creada", "Reporte generado".
 
-### 12. **Observation**
+### 11. **Observation**
 **¿Qué es?** Registro de un hecho, hallazgo o dato observado en el sistema, útil para análisis, auditoría, monitoreo o mejora.  
 **Ejemplo:** "Usuario abandonó el proceso", "Tiempo de respuesta fuera de rango", "Anomalía detectada".
 
-### 13. **Indicator**
+### 12. **Indicator**
 **¿Qué es?** Una métrica, KPI o señal cuantitativa/cualitativa que permite medir el desempeño, el avance, el estado o el impacto de procesos, áreas, resultados u observaciones.  
 **Ejemplo:** "Tasa de conversión mensual", "Tiempo promedio de respuesta", "Nivel de satisfacción del cliente".
 
