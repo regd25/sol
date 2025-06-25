@@ -220,7 +220,7 @@ Domain:
     });
     describe("Structure Validation", () => {
         test("should validate complete SOL document structure", () => {
-            const validDocument = fs.readFileSync(path.join(fixturesPath, "sample.sol"), "utf8");
+            const validDocument = fs.readFileSync(path.join(fixturesPath, "sample.sop"), "utf8");
             const validation = formatter.validateStructure(validDocument);
             expect(validation.isValid).toBe(true);
             expect(validation.errors).toHaveLength(0);
@@ -240,7 +240,7 @@ Domain:
     });
     describe("Real Document Formatting", () => {
         test("should format unformatted document correctly", () => {
-            const unformattedDocument = fs.readFileSync(path.join(fixturesPath, "unformatted.sol"), "utf8");
+            const unformattedDocument = fs.readFileSync(path.join(fixturesPath, "unformatted.sop"), "utf8");
             const result = formatter.formatDocument(unformattedDocument);
             // Verify basic structure
             expect(result).toContain("# SOL - Semantic Operations Language");

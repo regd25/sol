@@ -248,7 +248,7 @@ Domain:
   describe("Structure Validation", () => {
     test("should validate complete SOL document structure", () => {
       const validDocument = fs.readFileSync(
-        path.join(fixturesPath, "sample.sol"),
+        path.join(fixturesPath, "sample.sop"),
         "utf8"
       )
 
@@ -280,7 +280,7 @@ Domain:
   describe("Real Document Formatting", () => {
     test("should format unformatted document correctly", () => {
       const unformattedDocument = fs.readFileSync(
-        path.join(fixturesPath, "unformatted.sol"),
+        path.join(fixturesPath, "unformatted.sop"),
         "utf8"
       )
 

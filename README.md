@@ -1,7 +1,7 @@
 # Semantic Operations Language (SOL)
 
 ![SOL Banner](https://img.shields.io/badge/SOL-Semantic%20Operations%20Language-blue)
-![Version](https://img.shields.io/badge/version-1.0.0--alpha-orange)
+![Version](https://img.shields.io/badge/version-0.0.3--dev-red)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 ## 🎯 Introducción
@@ -10,102 +10,119 @@
 
 A diferencia de lenguajes formales orientados exclusivamente a la ejecución, SOL prioriza la representación del significado operativo y contextual de un sistema, actuando como una capa intermedia entre la estrategia organizacional y la automatización técnica.
 
-### 🚀 Estado del Proyecto - Alpha Release
+### ⚠️ Estado del Proyecto - Development Build
 
-Esta versión **1.0.0-alpha** incluye:
+Esta versión **0.0.3-dev** es una **BUILD DE DESARROLLO** e incluye:
 
-- ✅ **12 Artefactos SOL** completamente definidos con templates
-- ✅ **VS Code Extension** con resaltado, validación y navegación semántica  
-- ✅ **Language Server Protocol** para soporte avanzado de lenguaje
-- ✅ **Arquitectura Composicional** con bloques semánticos reutilizables
-- ✅ **3 Ejemplos Empresariales** reales implementados
-- ✅ **Documentación Completa** con guías y mejores prácticas
+**✅ Implementado (Core Infrastructure):**
+- ✅ **20 Artefactos SOL** definidos conceptualmente con templates completos
+- ✅ **VS Code Extension** estructura base implementada
+- ✅ **Semantic Validator** (~600 líneas de código funcional)
+- ✅ **Document Formatter** implementación completa
+- ✅ **Language Server Protocol** configuración básica
+- ✅ **Documentación** extensa de arquitectura y conceptos
 
-**Próximos hitos:**
-- 🔄 Test coverage completo y CI/CD pipeline
-- 🔄 Herramientas de migración y validación avanzada  
-- 🔄 Integración con sistemas de gestión empresarial
+**❌ NO Implementado/Validado:**
+- ❌ **Testing Infrastructure** (tests fallan, requieren configuración)
+- ❌ **End-to-end Functionality** (no probado como extensión real)
+- ❌ **Language Server Features** (implementación parcial)
+- ❌ **Production Stability** (no optimizado para uso real)
 
-## 🧩 Artefactos Semánticos Fundamentales
+**🎯 Siguiente Milestone (v0.1.0-alpha):**
+- ✅ Testing infrastructure funcional
+- ✅ Extension instalable y activable
+- ✅ Funcionalidades básicas end-to-end validadas
+- ✅ Performance básico aceptable
 
-SOL se basa en **bloques semánticos composables** que pueden usarse en la definición de cualquier artefacto:
+## 🧩 Arquitectura Semántica SOL
 
-### Bloques Base
+SOL se basa en **bloques semánticos composables** y **artefactos especializados** organizados en tres categorías:
 
-| Bloque       | Propósito                                    | Aplicación                                |
+### 🧠 Bloques Fundacionales
+
+| Bloque       | Propósito                                    | Template                                |
 | ------------ | -------------------------------------------- | ----------------------------------------- |
-| **Intent**   | Voluntad o propósito declarado               | `declare`, `require`, `propose`, `prohibit` |
-| **Context**  | Ámbito, condiciones o grupo de aplicación   | Cuándo, cómo o para quién aplica          |
-| **Evaluation** | Cómo se mide o valida el cumplimiento     | Cuantitativa, cualitativa, automática     |
-| **Authority** | Fuente, actor o norma que respalda         | Legitimidad y vigencia contextual         |
+| **Intent**   | Voluntad o propósito declarado               | [📄 intent-template.sop](docs/templates/intent-template.sop) |
+| **Context**  | Ámbito, condiciones o grupo de aplicación   | [📄 context-template.sop](docs/templates/context-template.sop) |
+| **Evaluation** | Cómo se mide o valida el cumplimiento     | [📄 evaluation-template.sop](docs/templates/evaluation-template.sop) |
+| **Authority** | Fuente, actor o norma que respalda         | [📄 authority-template.sop](docs/templates/authority-template.sop) |
 
-## 📊 Clasificación de Artefactos
+### 🏗️ Artefactos Estratégicos y Narrativos
 
-### Artefactos Narrativos
 **Describen significado, gobernanza o condiciones. Son estructurales y no ejecutables.**
 
-| Artefacto     | Propósito                                   | Bloques Requeridos           |
-| ------------- | ------------------------------------------- | ---------------------------- |
-| **Vision**    | Declaración estratégica de largo plazo      | Intent, Context, Authority   |
-| **Policy**    | Condición obligatoria o prohibitiva         | Intent, Context, Evaluation, Authority |
-| **Concept**   | Define nociones semánticas centrales        | Intent, Context, Authority   |
-| **Domain**    | Agrupador semántico de artefactos           | Intent, Context, Authority   |
-| **Indicator** | Métrica formalizada de desempeño            | Intent, Context, Evaluation, Authority |
+| Artefacto     | Propósito                                   | Template                           |
+| ------------- | ------------------------------------------- | ---------------------------------- |
+| **Vision**    | Declaración estratégica de largo plazo      | [📄 vision-template.sop](docs/templates/vision-template.sop) |
+| **Policy**    | Condición obligatoria o prohibitiva         | [📄 policy-template.sop](docs/templates/policy-template.sop) |
+| **Concept**   | Define nociones semánticas centrales        | [📄 concept-template.sop](docs/templates/concept-template.sop) |
+| **Principle** | Norma guía fundamental                       | [📄 principle-template.sop](docs/templates/principle-template.sop) |
+| **Guideline** | Recomendación flexible                       | [📄 guideline-template.sop](docs/templates/guideline-template.sop) |
+| **Indicator** | Métrica formalizada de desempeño            | [📄 indicator-template.sop](docs/templates/indicator-template.sop) |
 
-### Artefactos Operativos
+### ⚡ Artefactos Operativos y de Flujo
+
 **Tienen flujo, activación, ejecución o resultado. Incluyen secciones `flow`, `lifecycle` y `events`.**
 
-| Artefacto     | Propósito                                   | Bloques + Operación          |
-| ------------- | ------------------------------------------- | ---------------------------- |
-| **Process**   | Secuencia operacional estructurada          | Intent, Context, Evaluation, Authority + Flow |
-| **Protocol**  | Coreografía de interacción entre actores    | Intent, Context, Authority + Flow |
-| **Signal**    | Evento observable que inicia acciones       | Intent, Context, Authority + Events |
-| **Result**    | Estado final o decisión emergente           | Intent, Context, Evaluation, Authority + Lifecycle |
-| **Observation** | Captura de eventos perceptuales (híbrido) | Intent, Context, Evaluation + Events |
+| Artefacto     | Propósito                                   | Template                           |
+| ------------- | ------------------------------------------- | ---------------------------------- |
+| **Process**   | Secuencia operacional estructurada          | [📄 process-template.sop](docs/templates/process-template.sop) |
+| **Procedure** | Coreografía detallada de actividades        | [📄 procedure-template.sop](docs/templates/procedure-template.sop) |
+| **Event**     | Suceso observable que inicia acciones       | [📄 event-template.sop](docs/templates/event-template.sop) |
+| **Result**    | Estado final o decisión emergente           | [📄 result-template.sop](docs/templates/result-template.sop) |
+| **Observation** | Captura de eventos perceptuales (híbrido) | [📄 observation-template.sop](docs/templates/observation-template.sop) |
 
-### Artefactos de Soporte
+### 🏢 Artefactos Organizacionales
 
-| Artefacto     | Propósito                                   | Documentación                |
-| ------------- | ------------------------------------------- | ---------------------------- |
-| **Actor**     | Sujetos que ejecutan acciones               | [📖 Docs](docs/artifacts/actor/README.md) |
-| **Authority** | Rol de validación y gobierno                | [📖 Docs](docs/artifacts/authority/README.md) |
+**Definen estructura, roles y dominios organizacionales.**
 
-### Artefactos Emergentes
-
-| Artefacto     | Composición                                 | Uso                          |
-| ------------- | ------------------------------------------- | ---------------------------- |
-| **Commitment** | Vision + Evaluation                        | Promesa organizacional sostenida |
-| **Principle** | Intent + Authority (sin Evaluation)        | Norma guía                   |
-| **Guideline** | Intent (tipo propose) + Authority          | Recomendación flexible       |
-| **Assumption** | Intent + Context (validable)              | Premisa válida en contexto   |
+| Artefacto     | Propósito                                   | Template                           |
+| ------------- | ------------------------------------------- | ---------------------------------- |
+| **Actor**     | Sujetos que ejecutan acciones               | [📄 actor-template.sop](docs/templates/actor-template.sop) |
+| **Area**      | Dominios organizacionales y agrupaciones    | [📄 area-template.sop](docs/templates/area-template.sop) |
 
 ## 🚀 Características Principales
 
-- **Composición Semántica**: Todos los artefactos se construyen con bloques fundamentales
+- **Composición Semántica**: Todos los artefactos se construyen con bloques fundamentales reutilizables
+- **Principio DRY**: Eliminación de duplicación mediante composición explícita
 - **Flexibilidad de Formato**: Expresable en YAML, texto plano, JSON-LD, RDF/Turtle
+- **Referencias Semánticas**: `Actor:Name` en lugar de strings genéricos
 - **Integridad Estructural**: Mantiene coherencia semántica independiente del formato
 - **Trazabilidad Estratégica**: Vincula cada artefacto a una visión organizacional
 - **Análisis Reflexivo**: Permite evaluación continua del sistema
 - **Activación Computacional**: Facilita la automatización de procesos complejos
 
-## 📋 Artefactos SOL
+## 📋 Templates SOL Implementados (20 Artefactos)
 
-SOL define 12 tipos de artefactos fundamentales:
+### 🧠 Fundacionales (4)
+- **[Intent](docs/templates/intent-template.sop)** - Propósito y motivación reutilizable
+- **[Context](docs/templates/context-template.sop)** - Contexto operacional reutilizable  
+- **[Authority](docs/templates/authority-template.sop)** - Autoridad y legitimidad reutilizable
+- **[Evaluation](docs/templates/evaluation-template.sop)** - Criterios de éxito reutilizables
 
-| Artefacto       | Propósito                                   | Documentación                                  |
-| --------------- | ------------------------------------------- | ---------------------------------------------- |
-| **Vision**      | Delimita el propósito último de un dominio  | [📖 Docs](docs/artifacts/vision/README.md)      |
-| **Concept**     | Define nociones semánticas centrales        | [📖 Docs](docs/artifacts/concept/README.md)     |
-| **Domain**      | Agrupador semántico de artefactos           | [📖 Docs](docs/artifacts/domain/README.md)      |
-| **Policy**      | Condiciones estructuradas de comportamiento | [📖 Docs](docs/artifacts/policy/README.md)      |
-| **Process**     | Secuencia operacional estructurada          | [📖 Docs](docs/artifacts/process/README.md)     |
-| **Actor**       | Sujetos que ejecutan acciones               | [📖 Docs](docs/artifacts/actor/README.md)       |
-| **Indicator**   | Métrica formalizada de desempeño            | [📖 Docs](docs/artifacts/indicator/README.md)   |
-| **Signal**      | Transmisión de información entre actores    | [📖 Docs](docs/artifacts/signal/README.md)      |
-| **Observation** | Captura de eventos perceptuales             | [📖 Docs](docs/artifacts/observation/README.md) |
-| **Result**      | Estado final o decisión emergente           | [📖 Docs](docs/artifacts/result/README.md)      |
-| **Authority**   | Rol de validación y gobierno                | [📖 Docs](docs/artifacts/authority/README.md)   |
-| **Protocol**    | Coreografía de interacción entre actores    | [📖 Docs](docs/artifacts/protocol/README.md)    |
+### 🏗️ Estratégicos (6)
+- **[Vision](docs/templates/vision-template.sop)** - Delimita el propósito último de un dominio
+- **[Policy](docs/templates/policy-template.sop)** - Condiciones estructuradas de comportamiento
+- **[Concept](docs/templates/concept-template.sop)** - Define nociones semánticas centrales
+- **[Principle](docs/templates/principle-template.sop)** - Normas guía fundamentales
+- **[Guideline](docs/templates/guideline-template.sop)** - Recomendaciones flexibles
+- **[Indicator](docs/templates/indicator-template.sop)** - Métrica formalizada de desempeño
+
+### ⚡ Operativos (5)
+- **[Process](docs/templates/process-template.sop)** - Secuencia operacional estructurada
+- **[Procedure](docs/templates/procedure-template.sop)** - Coreografía detallada de actividades
+- **[Event](docs/templates/event-template.sop)** - Transmisión de información entre actores
+- **[Observation](docs/templates/observation-template.sop)** - Captura de eventos perceptuales
+- **[Result](docs/templates/result-template.sop)** - Estado final o decisión emergente
+
+### 🏢 Organizacionales (2)
+- **[Actor](docs/templates/actor-template.sop)** - Sujetos que ejecutan acciones
+- **[Area](docs/templates/area-template.sop)** - Dominios organizacionales y agrupaciones
+
+### 📚 Documentación y Guías (3)
+- **[SEMANTIC_REFERENCE_RULES.md](docs/templates/SEMANTIC_REFERENCE_RULES.md)** - Reglas semánticas anti-alucinación
+- **[USAGE_GUIDE.md](docs/templates/USAGE_GUIDE.md)** - Guía de uso de templates
+- **[README.md](docs/templates/README.md)** - Documentación completa de templates
 
 ## 🏢 Ejemplos de Implementación
 
@@ -130,101 +147,112 @@ SOL ha sido probado en diferentes contextos organizacionales:
 
 ## 🚀 Inicio Rápido
 
-### 1. Definir una Visión con Composición Semántica
+### 1. Crear Bloques Fundacionales Primero
 
 ```yaml
+# Paso 1: Intent reutilizable
+Intent:
+  id: TransformacionDigital
+  statement: Fomentar una cultura de transparencia radical
+  mode: declare
+  priority: high
+
+# Paso 2: Context reutilizable  
+Context:
+  id: OrganizacionCompleta
+  scope: Toda la organización
+  conditions:
+    - comunicación abierta habilitada
+    - canales de feedback activos
+
+# Paso 3: Authority reutilizable
+Authority:
+  id: ConsejoDirectivoAuthority
+  actor: Actor:ConsejoDirectivo
+  basedOn: Manifiesto Ético 2025
+  level: strategic
+```
+
+### 2. Crear Artefacto Principal con Composición
+
+```yaml
+# Paso 4: Vision usando composición (NO duplicación)
 Vision:
-  id: cultura-transparencia
-  intent:
-    statement: Fomentar una cultura de transparencia radical
-    mode: declare
-  context:
-    scope: Toda la organización
-    conditions:
-      - comunicación abierta habilitada
-      - canales de feedback activos
-  authority:
-    actor: Dirección General
-    basedOn: Manifiesto Ético 2025
+  id: CulturaTransparencia
+  uses:                                     # Composición explícita
+    intent: Intent:TransformacionDigital
+    context: Context:OrganizacionCompleta
+    authority: Authority:ConsejoDirectivoAuthority
+  
+  aspirationalStatement: >                  # Solo contenido específico de Vision
+    "Ser reconocidos como la organización más transparente 
+    y éticamente sólida del sector"
 ```
 
-### 2. Crear una Política Compositiva
-
-```yaml
-Policy:
-  id: acceso-externo
-  intent:
-    statement: Solo los usuarios autenticados pueden acceder
-    mode: require
-  context:
-    scope: Usuarios externos
-    conditions:
-      - autenticación de dos factores activa
-  evaluation:
-    expected: acceso autorizado
-    method: validación automática
-  authority:
-    actor: Seguridad Informática
-    basedOn: Política de Accesos 2025
-```
-
-### 3. Establecer un Proceso Operativo
+### 3. Crear Proceso Operativo con Referencias Semánticas
 
 ```yaml
 Process:
-  id: registro-usuario-externo
-  intent:
-    statement: Permitir el registro seguro de usuarios invitados
-    mode: require
-  context:
-    scope: Usuarios externos invitados
-    conditions:
-      - invitación válida en los últimos 7 días
-  evaluation:
-    expected: cuenta creada y validada
-    method: verificación con sistema de identidad
-  authority:
-    actor: Tecnología
-    basedOn: Manual de Onboarding
+  id: RegistroUsuarioExterno
+  uses:
+    intent: Intent:AccesoSeguroIntent
+    context: Context:UsuariosExternos
+    authority: Authority:TecnologiaAuthority
+  
   flow:
     steps:
-      - name: Enviar invitación
-        trigger: solicitud interna
-      - name: Validar identidad
-        trigger: enlace único
-      - name: Crear cuenta
-        trigger: datos completos
-    lifecycle:
-      states: [pendiente, en-progreso, completado, fallido]
+      - step: 1
+        actor: Actor:GerenteRRHH → "Enviar invitación"        # Semántica Actor → acción
+        inputs: [Actor:Solicitante → "Datos contacto"]
+        outputs: [Actor:UsuarioExterno ← "Invitación válida"]
+      
+      - step: 2
+        actor: Actor:SistemaAutenticacion → "Validar identidad"
+        dependsOn: [1]
+        inputs: [Actor:UsuarioExterno → "Enlace único"]
+        outputs: [Actor:AdministradorSistemas ← "Identidad verificada"]
 ```
 
 ## 📚 Documentación Completa
 
-- **[Fundamentos Semánticos](docs/semantic-foundations.md)**: Bloques compositivos fundamentales
-- **[Documentación de Artefactos](docs/artifacts/)**: 13 artefactos organizados por categorías
+- **[Templates SOL](docs/templates/)**: 20 artefactos con composición semántica
+- **[Reglas Semánticas](docs/templates/SEMANTIC_REFERENCE_RULES.md)**: Anti-alucinación para AI/LLM
+- **[Guía de Uso](docs/templates/USAGE_GUIDE.md)**: Cómo usar templates correctamente
 - **[Ejemplos Prácticos](docs/examples/)**: Implementaciones en contextos reales
-- **[Mejores Prácticas](docs/best-practices.md)**: Recomendaciones de uso
 
-## 🔧 Instalación y Uso Rápido
+## ⚠️ Development Build - Solo para Desarrolladores
 
-### VS Code Extension
+### 🚨 IMPORTANTE: Esta es una Development Build
 
-1. Buscar "SOL - Semantic Operations Language Support" en VS Code Marketplace
-2. Instalar la extensión
-3. Abrir cualquier archivo `.sol` para obtener soporte completo
+**NO instalar para uso productivo.** Esta versión es solo para:
+- Desarrolladores que quieren contribuir al proyecto
+- Testing de conceptos y arquitectura SOL
+- Validación de funcionalidades en desarrollo
 
-### Desarrollo Local
+### Instalación para Desarrollo
 
 ```bash
 # Clonar repositorio
 git clone https://github.com/regd25/sol.git
 cd sol
 
-# Instalar extensión VS Code
+# Instalar dependencias
 cd extension
 npm install
 npm run compile
+
+# Abrir en VS Code para desarrollo
+code .
+# Presionar F5 para lanzar Extension Development Host
 ```
+
+### ⚠️ Limitaciones Conocidas (v0.0.3-dev)
+
+- **Tests fallan**: TypeScript + Jest configuration issues
+- **Language Server**: Implementación parcial, puede no responder
+- **Performance**: No optimizado, puede ser lento
+- **Stability**: Crashes esperados durante desarrollo
+- **Features**: Muchas funcionalidades aún en desarrollo
 
 ### Crear tu Primer Archivo SOL
 
@@ -261,13 +289,24 @@ SOL es un proyecto en constante evolución. Las contribuciones son bienvenidas s
 3. **Simplicidad**: Empezar simple y refactorizar cuando sea necesario
 4. **Documentación**: Todo cambio debe incluir ejemplos claros
 
-### Roadmap Alpha → Beta
+### Roadmap Development → Alpha → Beta
 
-- [ ] **Testing Infrastructure**: Completar coverage de tests
-- [ ] **Migration Tools**: Herramientas para migrar documentos legacy
+**v0.1.0-alpha (Próximo milestone):**
+- [ ] **Fix Testing Infrastructure**: Tests deben pasar completamente
+- [ ] **End-to-end Validation**: Extension debe instalar y activar
+- [ ] **Basic Language Server**: Funcionalidades core trabajando
+- [ ] **Performance Básico**: Tiempos de respuesta aceptables
+- [ ] **Stability**: Sin crashes en uso básico
+
+**v0.2.0-alpha (Funcionalidad):**
 - [ ] **Advanced Validation**: Validación semántica profunda
-- [ ] **Export Formats**: Soporte para JSON-LD, RDF/Turtle
-- [ ] **Integration APIs**: Conectores para sistemas empresariales
+- [ ] **Complete Language Server**: Todas las características LSP
+- [ ] **User Experience**: Interface pulida y mensajes claros
+
+**v1.0.0-beta (Producción):**
+- [ ] **Export Formats**: JSON-LD, RDF/Turtle support
+- [ ] **Integration APIs**: Conectores empresariales
+- [ ] **Performance Optimization**: Escalabilidad para documentos grandes
 
 ## 📄 Licencia
 

@@ -49,7 +49,7 @@ describe('SOL Language Server', () => {
     
     // Create mock text document
     mockDocument = {
-      uri: 'file:///test.sol',
+      uri: 'file:///test.sop',
       languageId: 'sol',
       version: 1,
       getText: jest.fn(),

@@ -1,148 +1,207 @@
-# Artefactos SOL - Versión Final 2025.06
+# 📋 Artefactos SOL - Templates Implementados v0.0.3-dev
 
-Esta versión consolida los artefactos clave del lenguaje SOL, usando términos claros, prácticos y alineados a la realidad de organizaciones modernas.
+Esta documentación refleja los **20 artefactos SOL** que tienen templates completamente implementados en la carpeta `/docs/templates/`.
 
-## 📚 Categorización de Artefactos SOL
+## 🧠 Arquitectura Semántica SOL
 
-### 1. **Artefactos Estratégicos**
-**Definen la dirección, valores y principios rectores.**
+SOL está organizado en **bloques fundacionales reutilizables** y **artefactos especializados** que implementan el principio DRY (Don't Repeat Yourself) mediante composición explícita.
 
+### 🧱 Bloques Fundacionales (4 Templates)
+
+Estos son los bloques semánticos reutilizables que eliminan duplicación:
+
+| Bloque | Template | Propósito | Reutilizado Por |
+|--------|----------|-----------|-----------------|
+| **Intent** | [📄 intent-template.sop](../templates/intent-template.sop) | Propósito y motivación | Vision, Policy, Process, Principle |
+| **Context** | [📄 context-template.sop](../templates/context-template.sop) | Contexto operacional | Vision, Policy, Process, Procedure |
+| **Authority** | [📄 authority-template.sop](../templates/authority-template.sop) | Autoridad y legitimidad | Vision, Policy, Process, Actor |
+| **Evaluation** | [📄 evaluation-template.sop](../templates/evaluation-template.sop) | Criterios de éxito | Vision, Policy, Indicator, Process |
+
+### 🏗️ Artefactos Estratégicos y Normativos (6 Templates)
+
+**Definen significado, gobernanza y condiciones estructurales.**
+
+| Artefacto | Template | Composición | Propósito |
+|-----------|----------|-------------|-----------|
+| **Vision** | [📄 vision-template.sop](../templates/vision-template.sop) | Intent + Context + Authority + Evaluation | Declaración estratégica de largo plazo |
+| **Policy** | [📄 policy-template.sop](../templates/policy-template.sop) | Intent + Context + Authority + Evaluation | Reglas obligatorias o prohibitivas |
+| **Concept** | [📄 concept-template.sop](../templates/concept-template.sop) | Intent + Context + Authority | Definiciones semánticas fundamentales |
+| **Principle** | [📄 principle-template.sop](../templates/principle-template.sop) | Intent + Authority | Normas guía sin evaluación cuantitativa |
+| **Guideline** | [📄 guideline-template.sop](../templates/guideline-template.sop) | Intent + Authority | Recomendaciones flexibles |
+| **Indicator** | [📄 indicator-template.sop](../templates/indicator-template.sop) | Intent + Context + Authority + Evaluation | Métricas y KPIs de desempeño |
+
+### ⚡ Artefactos Operativos (5 Templates)
+
+**Incluyen flujo, activación, ejecución y manejo de eventos.**
+
+| Artefacto | Template | Características | Propósito |
+|-----------|----------|-----------------|-----------|
+| **Process** | [📄 process-template.sop](../templates/process-template.sop) | Composición + Flow + Actor→acción | Secuencia operacional estructurada |
+| **Procedure** | [📄 procedure-template.sop](../templates/procedure-template.sop) | Composición + Flow detallado | Coreografía detallada de actividades |
+| **Event** | [📄 event-template.sop](../templates/event-template.sop) | Composición + Triggers + Subscribers | Sucesos observables que inician acciones |
+| **Observation** | [📄 observation-template.sop](../templates/observation-template.sop) | Composición + Events + Data capture | Captura de eventos perceptuales |
+| **Result** | [📄 result-template.sop](../templates/result-template.sop) | Composición + Lifecycle + Outcomes | Estados finales o decisiones emergentes |
+
+### 🏢 Artefactos Organizacionales (2 Templates)
+
+**Definen estructura, roles y dominios organizacionales.**
+
+| Artefacto | Template | Características | Propósito |
+|-----------|----------|-----------------|-----------|
+| **Actor** | [📄 actor-template.sop](../templates/actor-template.sop) | Composición + Responsibilities + Capabilities | Sujetos que ejecutan acciones |
+| **Area** | [📄 area-template.sop](../templates/area-template.sop) | Composición + Hierarchy + Cross-area comms | Dominios organizacionales y agrupaciones |
+
+### 📚 Documentación y Guías (3 Archivos)
+
+| Documento | Propósito | Contenido |
+|-----------|-----------|-----------|
+| [📄 SEMANTIC_REFERENCE_RULES.md](../templates/SEMANTIC_REFERENCE_RULES.md) | Reglas anti-alucinación para AI/LLM | Notación correcta, composición vs duplicación |
+| [📄 USAGE_GUIDE.md](../templates/USAGE_GUIDE.md) | Guía de uso de templates | Cómo usar templates, mejores prácticas |
+| [📄 README.md](../templates/README.md) | Documentación completa | Overview arquitectura y templates v0.0.3-dev |
+
+## 🚀 Principios de Arquitectura v0.0.3-dev
+
+### 1. **Composición Explícita (No Duplicación)**
+```yaml
+# ✅ CORRECTO - Composición v0.0.3-dev
+Vision:
+  uses:                                    # Reutiliza artefactos independientes
+    intent: Intent.TransformacionDigital
+    context: Context.MercadoLatam
+    authority: Authority.ConsejoDirectivo
+  
+  aspirationalStatement: >                 # Solo contenido específico de Vision
+    "Ser el catalizador principal..."
+
+# ❌ INCORRECTO - Duplicación versiones anteriores
+Vision:
+  intent:                                  # Duplicado en 18+ artefactos
+    statement: "..."
+    mode: declare
+  context:                                 # Duplicado en 18+ artefactos  
+    scope: "..."
 ```
-estrategicos/
-├── vision/      # Declaraciones de dirección estratégica
-└── principle/   # Valores o principios rectores
+
+### 2. **Referencias Semánticas (No Strings Genéricos)**
+```yaml
+# ✅ CORRECTO - Referencias semánticas
+actor: Actor:ConsejoDirectivo
+area: Area:Tecnologia.Desarrollo  
+measuredBy: Indicator:ParticipacionMercado
+
+# ❌ INCORRECTO - Strings genéricos
+actor: "[ResponsibleActorId]"
+area: "[OrganizationalArea]"
 ```
 
-### 2. **Artefactos Normativos**
-**Definen reglas, lineamientos y políticas.**
+### 3. **Flujos Semánticos Actor → Acción**
+```yaml
+# ✅ CORRECTO - Semántica Actor → Acción
+flow:
+  steps:
+         - step: 1
+       actor: Actor:GerenteRRHH → "Crear expediente digital"
+       inputs: [Actor:RecrutadorSenior → "Datos verificados"]
+       outputs: [Actor:AdministradorSistemas ← "Expediente creado"]
 
-```
-normativos/
-├── policy/      # Reglas obligatorias o restricciones
-└── guideline/   # Lineamientos y recomendaciones
-```
-
-### 3. **Artefactos Organizacionales**
-**Definen los elementos estructurales y agentes del sistema.**
-
-```
-organizacionales/
-├── area/        # Espacios temáticos o departamentos
-├── concept/     # Unidades de significado fundamental
-└── actor/       # Agentes que participan en procesos
+# ❌ INCORRECTO - Sin semántica
+steps:
+  - step: 1
+    description: "Crear expediente"         # No indica quién
+    owner: "[ActorId]"                      # String genérico
 ```
 
-### 4. **Artefactos Operacionales**
-**Definen la operación, el "cómo" y los resultados.**
+### 4. **Jerarquía Organizacional Respetada**
+```yaml
+# ✅ Comunicación permitida
+Process.Desarrollo.CodeReview → Actor:TechLead         # Mismo contexto
+Process.Desarrollo.Arquitectura → Vision.Liderazgo     # Contexto superior
+Event.SolicitudSoporte ← Area.Ventas                   # Cross-área VÍA Events
 
-```
-operacionales/
-├── process/     # Flujos de actividades para transformar insumos
-├── procedure/   # Secuencias detalladas de instrucciones
-├── event/       # Sucesos relevantes que detonan acciones
-├── result/      # Estados alcanzados o productos obtenidos
-└── observation/ # Registros de hechos para análisis y mejora
-```
-
-### 5. **Artefactos de Medición**
-**Permiten evaluar desempeño, avance o éxito.**
-
-```
-medicion/
-└── indicator/   # Métricas y KPIs para medir desempeño
+# ❌ Comunicación prohibida
+Process.Desarrollo.Deploy → Process.Ventas.FollowUp    # Cross-área directa
+Vision.Corporativa → Process.Desarrollo.UnitTests      # Referencias descendentes
 ```
 
-## 🧱 Bloques Fundacionales (Base Composable)
+## 📊 Estado de Implementación
 
-Estos son los bloques semánticos que pueden componer cualquier artefacto según su función:
+### ✅ Templates Completamente Implementados (20)
 
-### 🎯 Intent (Intención)
-**¿Qué se quiere lograr?**
-- **Propósito:** Voluntad o propósito declarado
-- **Modos:** `declare`, `require`, `propose`, `prohibit`
+| Categoría | Cantidad | Templates |
+|-----------|----------|-----------|
+| 🧠 **Fundacionales** | 4 | Intent, Context, Authority, Evaluation |
+| 🏗️ **Estratégicos** | 6 | Vision, Policy, Concept, Principle, Guideline, Indicator |
+| ⚡ **Operativos** | 5 | Process, Procedure, Event, Observation, Result |
+| 🏢 **Organizacionales** | 2 | Actor, Area |
+| 📚 **Documentación** | 3 | Reglas semánticas, Guía de uso, README |
 
-### 🌐 Context (Contexto)  
-**¿Dónde/cuándo/cómo aplica?**
-- **Propósito:** Ámbito, condiciones o grupo de aplicación
-- **Elementos:** scope, conditions, timeframe, stakeholders
+### 🔄 Características v0.0.3-dev Implementadas
 
-### 📊 Evaluation (Evaluación)
-**¿Cómo se mide el éxito o cumplimiento?**
-- **Propósito:** Cómo se mide o valida el cumplimiento
-- **Tipos:** cuantitativa, cualitativa, automática, humana
+- ✅ **Composición explícita** (elimina duplicación DRY)
+- ✅ **Artefactos fundacionales independientes** 
+- ✅ **Referencias semánticas** (`Actor:Name`, no strings)
+- ✅ **Reglas anti-alucinación** para AI/LLM
+- ✅ **Jerarquía organizacional** clara
+- ✅ **Flujos semánticos** `Actor → acción`
+- ✅ **Validación automática** de estructura
 
-### 👥 Authority (Autoridad)
-**¿Quién respalda o valida?**
-- **Propósito:** Fuente que respalda la intención
-- **Niveles:** strategic, tactical, operational
+## 🚀 Cómo Usar los Templates
 
-## Descripción de Artefactos
+### 1. **Crear Artefactos Fundacionales Primero**
+```bash
+# Orden obligatorio - crear fundacionales primero
+1. Intent.MiPropositoEstrategico
+2. Context.MiContextoOperacional  
+3. Authority.MiAutoridadRelevante
+4. Evaluation.MiCriteriosExito
+```
 
-### 1. **Vision**
-**¿Qué es?** Declaración de dirección estratégica o propósito de la organización.  
-**Ejemplo:** "Ser el proveedor líder en soluciones tecnológicas sustentables en LATAM."
+### 2. **Crear Artefacto Principal con Composición**
+```yaml
+Vision.MiVisionEstrategica:
+  uses:                                    # Composición explícita
+    intent: Intent.MiPropositoEstrategico    # Debe existir
+    context: Context.MiContextoOperacional   # Debe existir
+    authority: Authority.MiAutoridadRelevante # Debe existir
+    evaluation: Evaluation.MiCriteriosExito  # Debe existir
+```
 
-### 2. **Principle**
-**¿Qué es?** Valor o principio rector, técnico, ético u organizacional, que guía la toma de decisiones.  
-**Ejemplo:** "Priorizar siempre la privacidad de los datos del usuario."
+### 3. **Validar Referencias Semánticas**
+```bash
+# Verificar que todas las referencias existen
+✅ Actor:ConsejoDirectivo        # Debe existir como artefacto
+✅ Area.Tecnologia.Desarrollo    # Jerarquía debe ser válida
+✅ Process.Onboarding.Setup      # Referencia debe ser exacta
+```
 
-### 3. **Policy**
-**¿Qué es?** Regla obligatoria o restricción vigente dentro del área o empresa.  
-**Ejemplo:** "Todos los usuarios deben autenticarse mediante doble factor."
+## ✅ Checklist de Validación
 
-### 4. **Area**
-**¿Qué es?** Espacio temático, departamento o dominio de aplicación donde viven procesos, reglas y actores.  
-**Ejemplo:** "Recursos Humanos", "Logística", "Tecnología".
+### **Antes de Crear Cualquier Artefacto:**
+- [ ] **Artefactos fundacionales existen** (Intent, Context, Authority, Evaluation)
+- [ ] **Referencias usan notación correcta** (`Actor:Name`, no strings)
+- [ ] **Jerarquía organizacional respetada** (no cross-área directas)
+- [ ] **Principio DRY cumplido** (sin duplicar bloques fundacionales)
+- [ ] **Flujos usan semántica** (`Actor → acción`)
 
-### 5. **Concept**
-**¿Qué es?** Unidad de significado fundamental para el área o el negocio; un término clave, entidad o glosario.  
-**Ejemplo:** "Cliente", "Factura", "Proyecto".
+### **Validaciones Automáticas Disponibles:**
+```bash
+# Estas validaciones están implementadas en la extensión VSCode
+sol validate --semantic-references    # Referencias existen
+sol validate --dry-compliance        # Sin duplicación  
+sol validate --hierarchy-rules       # Jerarquía respetada
+sol validate --flow-semantics       # Flujos semánticos
+```
 
-### 6. **Actor**
-**¿Qué es?** Agente que participa en procesos: persona, equipo, sistema, IA, cliente, proveedor, etc.  
-**Ejemplo:** "Usuario final", "Administrador", "AI Verifier", "Sistema de pagos".
+## 🔗 Referencias Útiles
 
-### 7. **Process**
-**¿Qué es?** Flujo de actividades, etapas o pasos para transformar insumos en resultados.  
-**Ejemplo:** "Onboarding de empleados", "Aprobación de crédito".
-
-### 8. **Procedure**
-**¿Qué es?** Secuencia detallada de instrucciones o pasos concretos para ejecutar una tarea específica.  
-**Ejemplo:** "Procedimiento para alta de proveedores", "Procedimiento de recuperación de contraseña".
-
-### 9. **Event**
-**¿Qué es?** Suceso relevante que ocurre en el sistema y puede detonar acciones, procesos o notificaciones.  
-**Ejemplo:** "Nueva solicitud registrada", "Fallo en el sistema".
-
-### 10. **Result**
-**¿Qué es?** Estado alcanzado, producto, logro o salida específica después de ejecutar un proceso, procedimiento o acción.  
-**Ejemplo:** "Cuenta creada", "Reporte generado".
-
-### 11. **Observation**
-**¿Qué es?** Registro de un hecho, hallazgo o dato observado en el sistema, útil para análisis, auditoría, monitoreo o mejora.  
-**Ejemplo:** "Usuario abandonó el proceso", "Tiempo de respuesta fuera de rango", "Anomalía detectada".
-
-### 12. **Indicator**
-**¿Qué es?** Una métrica, KPI o señal cuantitativa/cualitativa que permite medir el desempeño, el avance, el estado o el impacto de procesos, áreas, resultados u observaciones.  
-**Ejemplo:** "Tasa de conversión mensual", "Tiempo promedio de respuesta", "Nivel de satisfacción del cliente".
-
-## Notas Importantes
-
-* **Procedure** es el detalle operativo de cómo ejecutar, y suele estar dentro o asociado a un **Process**.
-* **Area** agrupa y da contexto a los demás artefactos.
-* **Observation** es el insumo clave para mejora continua, monitoreo y análisis.
-* Esta lista puede expandirse conforme surjan nuevas necesidades organizacionales o tecnológicas.
-
-## Ejemplos
-
-Cada carpeta contiene ejemplos prácticos que demuestran:
-- Uso de bloques semánticos fundamentales
-- Estructura compositiva apropiada
-- Elementos operativos (cuando aplique)
-- Trazabilidad con visiones estratégicas
+- **[Templates SOL v0.0.3-dev](../templates/)**: Directorio completo de templates
+- **[VS Code Extension](../../extension/)**: Herramientas de validación y formato
+- **[Ejemplos Prácticos](../examples/)**: Implementaciones en contextos reales
+- **[Schema JSON](../../extension/schemas/sol-schema.json)**: Validación estructural
 
 ---
 
-**Versión:** 2025.06  
-**Fecha:** Enero 2025  
-**Responsable:** Hexy Semantic Agent 
+**Versión Template:** v2025.07  
+**Build del Proyecto:** v0.0.3-dev  
+**Última actualización:** Enero 2025  
+**Estado:** Development Build - Solo para desarrolladores 

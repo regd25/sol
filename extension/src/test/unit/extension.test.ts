@@ -111,13 +111,13 @@ describe('SOL Extension Core Functionality', () => {
 
   describe('Document Type Detection', () => {
     test('should detect SOL documents by extension', () => {
-      const solDocument = { fileName: 'test.sol', languageId: 'sol' }
-      const yamlDocument = { fileName: 'test.sol.yml', languageId: 'yaml' }
+      const solDocument = { fileName: 'test.sop', languageId: 'sol' }
+      const yamlDocument = { fileName: 'test.sop.yml', languageId: 'yaml' }
       const regularDocument = { fileName: 'test.txt', languageId: 'plaintext' }
 
-      expect(solDocument.fileName.endsWith('.sol')).toBe(true)
-      expect(yamlDocument.fileName.includes('.sol.')).toBe(true)
-      expect(regularDocument.fileName.endsWith('.sol')).toBe(false)
+      expect(solDocument.fileName.endsWith('.sop')).toBe(true)
+      expect(yamlDocument.fileName.includes('.sop.')).toBe(true)
+      expect(regularDocument.fileName.endsWith('.sop')).toBe(false)
     })
 
     test('should identify SOL content by header', () => {
@@ -310,14 +310,14 @@ content:"Test content"`
       // Simulate active editor change to SOL document
       const mockEditor = {
         document: {
-          fileName: 'test.sol',
+          fileName: 'test.sop',
           languageId: 'sol',
           getText: () => TestUtils.createMinimalSOLDocument(),
         }
       }
 
       // Simulate the status bar update logic
-      if (mockEditor.document.fileName.endsWith('.sol')) {
+      if (mockEditor.document.fileName.endsWith('.sop')) {
         mockStatusBarItem.text = '$(file-code) SOL'
         mockStatusBarItem.tooltip = 'SOL - Semantic Operations Language'
         mockStatusBarItem.show()
@@ -338,7 +338,7 @@ content:"Test content"`
       }
 
       // Simulate the status bar update logic
-      if (!mockEditor.document.fileName.endsWith('.sol')) {
+      if (!mockEditor.document.fileName.endsWith('.sop')) {
         mockStatusBarItem.hide()
       }
 

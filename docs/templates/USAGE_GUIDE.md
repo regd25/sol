@@ -8,18 +8,18 @@ Se han creado **5 templates estandarizados** para los artefactos SOL más comune
 
 | Template | Tipo | Uso Principal | Ejemplo de Caso |
 |----------|------|---------------|-----------------|
-| `vision-template.sol` | Estratégico | Declaraciones de dirección organizacional | "Ser líder en innovación tecnológica" |
-| `policy-template.sol` | Normativo | Reglas y restricciones obligatorias | "Política de seguridad de datos" |
-| `concept-template.sol` | Organizacional | Definiciones fundamentales del negocio | "Cliente", "Producto", "Proyecto" |
-| `process-template.sol` | Operacional | Flujos de trabajo y procedimientos | "Onboarding empleados", "Aprobación créditos" |
-| `indicator-template.sol` | Medición | Métricas y KPIs de desempeño | "Satisfacción del cliente", "Tiempo de respuesta" |
+| `vision-template.sop` | Estratégico | Declaraciones de dirección organizacional | "Ser líder en innovación tecnológica" |
+| `policy-template.sop` | Normativo | Reglas y restricciones obligatorias | "Política de seguridad de datos" |
+| `concept-template.sop` | Organizacional | Definiciones fundamentales del negocio | "Cliente", "Producto", "Proyecto" |
+| `process-template.sop` | Operacional | Flujos de trabajo y procedimientos | "Onboarding empleados", "Aprobación créditos" |
+| `indicator-template.sop` | Medición | Métricas y KPIs de desempeño | "Satisfacción del cliente", "Tiempo de respuesta" |
 
 ## 🚀 Cómo Usar los Templates
 
 ### Paso 1: Selecciona el Template Apropiado
 ```bash
 # Según el tipo de artefacto que necesites
-cp docs/templates/vision-template.sol docs/artifacts/estrategicos/vision/mi-vision.sol
+cp docs/templates/vision-template.sop docs/artifacts/estrategicos/vision/mi-vision.sop
 ```
 
 ### Paso 2: Personaliza los Metadatos
@@ -101,6 +101,6 @@ Cada campo incluye:
 - [Esquema JSON SOL](../../extension/schemas/sol-schema.json)
 
 ---
-**Versión:** v2025.06  
+**Versión:** v0.0.3-dev  
 **Creado:** Enero 2025  
 **Mantenido por:** Equipo SOL 

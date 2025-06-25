@@ -25,9 +25,7 @@ import {
   ValidationResult,
 } from "./validator/SemanticValidator"
 import { SolFormatter } from "./formatter/SolFormatter"
-import {
-  DocumentLinkProvider,
-} from "./providers/DocumentLinkProvider"
+import { DocumentLinkProvider } from "./providers/DocumentLinkProvider"
 import { DefinitionProvider } from "./providers/DefinitionProvider"
 import { VisualizerPanel } from "./visualizer/SolVisualizer"
 
@@ -75,9 +73,9 @@ function initializeLanguageServer(context: vscode.ExtensionContext) {
     synchronize: {
       // Notify the server about file changes to SOL files
       fileEvents: [
-        vscode.workspace.createFileSystemWatcher("**/*.sol"),
-        vscode.workspace.createFileSystemWatcher("**/*.sol.yaml"),
-        vscode.workspace.createFileSystemWatcher("**/*.sol.yml"),
+        vscode.workspace.createFileSystemWatcher("**/*.sop"),
+        vscode.workspace.createFileSystemWatcher("**/*.sop.yaml"),
+        vscode.workspace.createFileSystemWatcher("**/*.sop.yml"),
       ],
     },
   }
@@ -93,48 +91,48 @@ function initializeLanguageServer(context: vscode.ExtensionContext) {
   client.start()
 }
 
-  function registerSolCommands(context: vscode.ExtensionContext) {
-   const semanticValidator = new SemanticValidator()
-   const solFormatter = new SolFormatter()
-   const documentLinkProvider = new DocumentLinkProvider()
-   const definitionProvider = new DefinitionProvider()
+function registerSolCommands(context: vscode.ExtensionContext) {
+  const semanticValidator = new SemanticValidator()
+  const solFormatter = new SolFormatter()
+  const documentLinkProvider = new DocumentLinkProvider()
+  const definitionProvider = new DefinitionProvider()
 
-   // Register providers
-   context.subscriptions.push(
-     vscode.languages.registerDocumentFormattingEditProvider(
-       ["sol", "sol-yaml"],
-       {
-         provideDocumentFormattingEdits(
-           document: vscode.TextDocument,
-           options: vscode.FormattingOptions,
-           token: vscode.CancellationToken
-         ): vscode.TextEdit[] {
-           const formatted = solFormatter.formatDocument(document.getText(), {
-             insertSpaces: options.insertSpaces,
-             tabSize: options.tabSize,
-             trimTrailingWhitespace: true,
-             insertFinalNewline: true,
-             trimFinalNewlines: true,
-           })
+  // Register providers
+  context.subscriptions.push(
+    vscode.languages.registerDocumentFormattingEditProvider(
+      ["sol", "sol-yaml"],
+      {
+        provideDocumentFormattingEdits(
+          document: vscode.TextDocument,
+          options: vscode.FormattingOptions,
+          token: vscode.CancellationToken
+        ): vscode.TextEdit[] {
+          const formatted = solFormatter.formatDocument(document.getText(), {
+            insertSpaces: options.insertSpaces,
+            tabSize: options.tabSize,
+            trimTrailingWhitespace: true,
+            insertFinalNewline: true,
+            trimFinalNewlines: true,
+          })
 
-           const fullRange = new vscode.Range(
-             document.positionAt(0),
-             document.positionAt(document.getText().length)
-           )
+          const fullRange = new vscode.Range(
+            document.positionAt(0),
+            document.positionAt(document.getText().length)
+          )
 
-           return [vscode.TextEdit.replace(fullRange, formatted)]
-         },
-       }
-     ),
-     vscode.languages.registerDocumentLinkProvider(
-       ["sol", "sol-yaml"],
-       documentLinkProvider
-     ),
-     vscode.languages.registerDefinitionProvider(
-       ["sol", "sol-yaml"],
-       definitionProvider
-     )
-   )
+          return [vscode.TextEdit.replace(fullRange, formatted)]
+        },
+      }
+    ),
+    vscode.languages.registerDocumentLinkProvider(
+      ["sol", "sol-yaml"],
+      documentLinkProvider
+    ),
+    vscode.languages.registerDefinitionProvider(
+      ["sol", "sol-yaml"],
+      definitionProvider
+    )
+  )
 
   // Command: Validate Semantic Coherence (Updated for Phase 4)
   const validateCoherenceCommand = vscode.commands.registerCommand(
@@ -248,24 +246,24 @@ function initializeLanguageServer(context: vscode.ExtensionContext) {
           `Error formatting SOL document: ${error}`
         )
       }
-         }
-   )
+    }
+  )
 
-   // Command: Show SOL Visualizer (Phase 4 - Visual Diagrams)
-   const showVisualizerCommand = vscode.commands.registerCommand(
-     "sol.showVisualizer",
-     () => {
-       VisualizerPanel.createOrShow(context.extensionUri)
-     }
-   )
+  // Command: Show SOL Visualizer (Phase 4 - Visual Diagrams)
+  const showVisualizerCommand = vscode.commands.registerCommand(
+    "sol.showVisualizer",
+    () => {
+      VisualizerPanel.createOrShow(context.extensionUri)
+    }
+  )
 
-   context.subscriptions.push(
-     validateCoherenceCommand,
-     showTraceabilityCommand,
-     generateDocumentationCommand,
-     formatSolDocumentCommand,
-     showVisualizerCommand
-   )
+  context.subscriptions.push(
+    validateCoherenceCommand,
+    showTraceabilityCommand,
+    generateDocumentationCommand,
+    formatSolDocumentCommand,
+    showVisualizerCommand
+  )
 }
 
 function registerStatusBarAndDiagnostics(context: vscode.ExtensionContext) {

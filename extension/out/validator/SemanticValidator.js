@@ -28,21 +28,21 @@ exports.SemanticValidator = void 0;
 class SemanticValidator {
     constructor() {
         this.SEMANTIC_RULES = [
-            // ✅ Actor Reference Validation (Actor.Id notation - SOL v2025.07)
+            // ✅ Actor Reference Validation (Actor:Id notation - SOL v2025.07)
             {
                 id: "ACTOR_REFERENCE_NOTATION",
                 pattern: /actor:\s*["']?([^"'\n]+)["']?/gi,
                 validator: (match, context) => {
                     const actorRef = match[1].trim();
-                    if (!actorRef.match(/^Actor\:[A-Z][a-zA-Z0-9]*$/)) {
+                    if (!actorRef.match(/^Actor:[A-Z][a-zA-Z0-9]*$/)) {
                         return [
                             {
                                 type: "reference",
-                                message: `Actor reference must use Actor.Id notation, found: "${actorRef}"`,
+                                message: `Actor reference must use Actor:Id notation, found: "${actorRef}"`,
                                 line: context.currentLine,
                                 column: match.index || 0,
                                 severity: "error",
-                                suggestion: `Use Actor.${this.toCamelCase(actorRef.replace(/^Actor[:.]/, ""))} instead`,
+                                suggestion: `Use Actor:${this.toCamelCase(actorRef.replace(/^Actor[:.]/, ""))} instead`,
                                 ruleId: "ACTOR_REFERENCE_NOTATION",
                             },
                         ];
@@ -51,21 +51,21 @@ class SemanticValidator {
                 },
                 category: "reference",
             },
-            // ✅ Area Reference Validation (Area.Id notation - SOL v2025.07)
+            // ✅ Area Reference Validation (Area:Id notation - SOL v2025.07)
             {
                 id: "AREA_REFERENCE_NOTATION",
                 pattern: /area:\s*["']?([^"'\n]+)["']?/gi,
                 validator: (match, context) => {
                     const areaRef = match[1].trim();
-                    if (!areaRef.match(/^Area\.[A-Z][a-zA-Z0-9]*(\.[A-Z][a-zA-Z0-9]*)*$/)) {
+                    if (!areaRef.match(/^Area:[A-Z][a-zA-Z0-9]*(\.[A-Z][a-zA-Z0-9]*)*$/)) {
                         return [
                             {
                                 type: "reference",
-                                message: `Area reference must use Area.Id notation, found: "${areaRef}"`,
+                                message: `Area reference must use Area:Id notation, found: "${areaRef}"`,
                                 line: context.currentLine,
                                 column: match.index || 0,
                                 severity: "error",
-                                suggestion: `Use Area.${this.toCamelCase(areaRef.replace(/^Area[:.]/, ""))} instead`,
+                                suggestion: `Use Area:${this.toCamelCase(areaRef.replace(/^Area[:.]/, ""))} instead`,
                                 ruleId: "AREA_REFERENCE_NOTATION",
                             },
                         ];
@@ -74,10 +74,10 @@ class SemanticValidator {
                 },
                 category: "reference",
             },
-            // ✅ Flow Step Notation Validation (actor: Actor.Id → "action" - SOL v2025.07)
+            // ✅ Flow Step Notation Validation (- Actor:Id → "action" - SOL v2025.07)
             {
                 id: "FLOW_STEP_NOTATION",
-                pattern: /-\s*Actor\.([A-Z][a-zA-Z0-9]*)\s*→\s*"(.+)"/gi,
+                pattern: /-\s*Actor:([A-Z][a-zA-Z0-9]*)\s*→\s*"(.+)"/gi,
                 validator: (match, context) => {
                     const actorId = match[1].trim();
                     const action = match[2].trim();
@@ -85,7 +85,7 @@ class SemanticValidator {
                     const isInFlow = this.isInFlowSection(context.lines, context.currentLine);
                     if (isInFlow) {
                         // Validate actor reference exists
-                        const actorRef = `Actor.${actorId}`;
+                        const actorRef = `Actor:${actorId}`;
                         if (!context.artifacts.has(actorRef)) {
                             return [
                                 {
@@ -94,7 +94,7 @@ class SemanticValidator {
                                     line: context.currentLine,
                                     column: match.index || 0,
                                     severity: "warning",
-                                    suggestion: `Ensure Actor.${actorId} is defined`,
+                                    suggestion: `Ensure Actor:${actorId} is defined`,
                                     ruleId: "FLOW_ACTOR_REFERENCE",
                                 },
                             ];
@@ -107,23 +107,23 @@ class SemanticValidator {
             // ✅ Uses Block Validation (Foundational Composition - SOL v2025.07)
             {
                 id: "USES_BLOCK_VALIDATION",
-                pattern: /uses:\s*\n(\s+)(intent|context|authority|evaluation):\s*([A-Z][a-zA-Z0-9]*)\.([A-Z][a-zA-Z0-9]*)/gi,
+                pattern: /uses:\s*\n(\s+)(intent|context|authority|evaluation):\s*([A-Z][a-zA-Z0-9]*):([A-Z][a-zA-Z0-9]*)/gi,
                 validator: (match, context) => {
                     const foundationalType = match[2].toLowerCase();
                     const artifactType = match[3];
                     const artifactId = match[4];
-                    const fullReference = `${artifactType}.${artifactId}`;
+                    const fullReference = `${artifactType}:${artifactId}`;
                     // Validate foundational type matches artifact type
                     const expectedType = foundationalType.charAt(0).toUpperCase() + foundationalType.slice(1);
                     if (artifactType !== expectedType) {
                         return [
                             {
                                 type: "reference",
-                                message: `Foundational reference type mismatch: "${foundationalType}" should reference ${expectedType}.Id, found ${artifactType}.${artifactId}`,
+                                message: `Foundational reference type mismatch: "${foundationalType}" should reference ${expectedType}:Id, found ${artifactType}:${artifactId}`,
                                 line: context.currentLine,
                                 column: match.index || 0,
                                 severity: "error",
-                                suggestion: `Use ${expectedType}.${artifactId} instead`,
+                                suggestion: `Use ${expectedType}:${artifactId} instead`,
                                 ruleId: "USES_BLOCK_VALIDATION",
                             },
                         ];
@@ -146,11 +146,11 @@ class SemanticValidator {
                         return [
                             {
                                 type: "dry",
-                                message: `Inline foundational block "${blockType}" violates DRY principle. Should be defined as separate artifact and referenced via uses: ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}.Id`,
+                                message: `Inline foundational block "${blockType}" violates DRY principle. Should be defined as separate artifact and referenced via uses: ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}:Id`,
                                 line: context.currentLine,
                                 column: match.index || 0,
                                 severity: "warning",
-                                suggestion: `Create ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}.MyId artifact and use "uses: { ${blockType}: ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}.MyId }"`,
+                                suggestion: `Create ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}:MyId artifact and use "uses: { ${blockType}: ${blockType.charAt(0).toUpperCase() + blockType.slice(1)}:MyId }"`,
                                 ruleId: "DRY_FOUNDATIONAL_BLOCKS",
                             },
                         ];
@@ -349,12 +349,12 @@ class SemanticValidator {
         const duplicateBlocks = this.findDuplicateFoundationalBlocks(text);
         for (const duplicate of duplicateBlocks) {
             warnings.push({
-                type: "best-practice",
+                type: 'best-practice',
                 message: `Duplicate foundational block "${duplicate.type}" found. Consider extracting to separate ${duplicate.type.charAt(0).toUpperCase() + duplicate.type.slice(1)} artifact`,
                 line: duplicate.line,
                 column: 0,
-                suggestion: `Create ${duplicate.type.charAt(0).toUpperCase() + duplicate.type.slice(1)}.${duplicate.suggestedId} and reference via uses`,
-                ruleId: "DRY_COMPLIANCE",
+                suggestion: `Create ${duplicate.type.charAt(0).toUpperCase() + duplicate.type.slice(1)}:${duplicate.suggestedId} and reference via uses`,
+                ruleId: 'DRY_COMPLIANCE'
             });
         }
         return {
@@ -362,7 +362,7 @@ class SemanticValidator {
             errors,
             warnings,
             artifacts: [],
-            processingTime: 0,
+            processingTime: 0
         };
     }
     // ====== PRIVATE HELPER METHODS ======
@@ -372,16 +372,16 @@ class SemanticValidator {
         while ((match = artifactPattern.exec(text)) !== null) {
             const artifactType = match[1];
             const artifactId = match[2] || match[3];
-            const line = text.substring(0, match.index).split("\n").length - 1;
+            const line = text.substring(0, match.index).split('\n').length - 1;
             if (artifactId) {
-                // Use dot notation for SOL v2025.07
-                const fullId = `${artifactType}.${artifactId}`;
+                // Use colon notation for SOL (correct format)
+                const fullId = `${artifactType}:${artifactId}`;
                 artifacts.set(fullId, {
                     type: artifactType,
                     id: artifactId,
                     line,
                     references: [],
-                    referencedBy: [],
+                    referencedBy: []
                 });
             }
         }
@@ -447,20 +447,15 @@ class SemanticValidator {
     generateImprovementWarnings(text, artifacts) {
         const warnings = [];
         // Check for missing foundational artifacts
-        const missingFoundational = [
-            "Intent",
-            "Context",
-            "Authority",
-            "Evaluation",
-        ].filter((type) => !Array.from(artifacts.keys()).some((key) => key.startsWith(type + ".")));
+        const missingFoundational = ['Intent', 'Context', 'Authority', 'Evaluation'].filter(type => !Array.from(artifacts.keys()).some(key => key.startsWith(type + ':')));
         if (missingFoundational.length > 0) {
             warnings.push({
-                type: "recommendation",
-                message: `Consider adding foundational artifacts: ${missingFoundational.join(", ")}`,
+                type: 'recommendation',
+                message: `Consider adding foundational artifacts: ${missingFoundational.join(', ')}`,
                 line: 0,
                 column: 0,
-                suggestion: "Foundational artifacts improve semantic coherence and reduce duplication",
-                ruleId: "MISSING_FOUNDATIONAL",
+                suggestion: 'Foundational artifacts improve semantic coherence and reduce duplication',
+                ruleId: 'MISSING_FOUNDATIONAL'
             });
         }
         return warnings;

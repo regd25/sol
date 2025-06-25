@@ -81,7 +81,7 @@ describe('SOL Extension Integration Tests', () => {
     describe('Document Lifecycle Integration', () => {
         test('should handle complete SOL document workflow', () => __awaiter(void 0, void 0, void 0, function* () {
             // Create a test SOL document
-            const testFilePath = path.join(__dirname, '..', 'fixtures', 'integration-test.sol');
+            const testFilePath = path.join(__dirname, '..', 'fixtures', 'integration-test.sop');
             const testContent = setup_1.TestUtils.createMinimalSOLDocument();
             // Mock document creation
             const mockDocument = {
@@ -119,7 +119,7 @@ describe('SOL Extension Integration Tests', () => {
         test('should integrate language server with document changes', () => __awaiter(void 0, void 0, void 0, function* () {
             const testContent = setup_1.TestUtils.createMinimalSOLDocument();
             const mockDocument = {
-                uri: vscode.Uri.file('test.sol'),
+                uri: vscode.Uri.file('test.sop'),
                 languageId: 'sol',
                 getText: jest.fn().mockReturnValue(testContent),
                 positionAt: jest.fn(),
@@ -294,7 +294,7 @@ SomeRandomStuff:
   - invalid: content
     broken: reference: NonExistentArtifact`;
             const mockDocument = {
-                uri: vscode.Uri.file('invalid.sol'),
+                uri: vscode.Uri.file('invalid.sop'),
                 languageId: 'sol',
                 getText: jest.fn().mockReturnValue(invalidDocument),
             };
@@ -357,7 +357,7 @@ Actor:
     type: ${i % 2 === 0 ? 'Human' : 'System'}
 `).join('')}`;
             const mockDocument = {
-                uri: vscode.Uri.file('large.sol'),
+                uri: vscode.Uri.file('large.sop'),
                 languageId: 'sol',
                 getText: jest.fn().mockReturnValue(largeDocument),
                 lineCount: largeDocument.split('\n').length,

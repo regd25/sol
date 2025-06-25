@@ -18,7 +18,7 @@ Area:
     status: "active"
     author: "Test Author"
   description: "Test area for validation"
-  vision: Vision.TestVision
+  vision: Vision:TestVision
 
 Actor:
   meta:
@@ -28,7 +28,7 @@ Actor:
     status: "active"
     author: "Test Author"
   type: "Human"
-  area: Area.TestArea
+  area: Area:TestArea
   capabilities:
     - "Testing"
     - "Validation"
@@ -40,12 +40,12 @@ Process:
     created: "2024-01-01"
     status: "active"
     author: "Test Author"
-  vision: Vision.TestVision
-  area: Area.TestArea
+  vision: Vision:TestVision
+  area: Area:TestArea
   steps:
     - "Initialize test"
-    - Actor.TestActor → "Execute validation"
-    - Actor.TestActor → "Verify results"
+    - Actor:TestActor → "Execute validation"
+    - Actor:TestActor → "Verify results"
   endCondition: "All validation steps completed successfully"
 
 Policy:
@@ -56,8 +56,8 @@ Policy:
     status: "active"
     author: "Test Author"
   premise: "All tests must pass according to SOL principles"
-  vision: Vision.TestVision
-  area: Area.TestArea
+  vision: Vision:TestVision
+  area: Area:TestArea
 
 Indicator:
   meta:
@@ -70,4 +70,4 @@ Indicator:
   measurement: "Percentage of passed tests"
   unit: "percentage"
   goal: 100.0
-  measuredBy: Actor.TestActor 
+  measuredBy: Actor:TestActor 

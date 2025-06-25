@@ -154,17 +154,17 @@ Process:
 #### **2.1 Templates para 12 Artefactos Fundacionales**
 
 **Artefactos por crear:**
-1. `principle-template.sol` (estratégico)
-2. `guideline-template.sol` (normativo)
-3. `area-template.sol` (organizacional)
-4. `authority-template.sol` (soporte)
-5. `procedure-template.sol` (operacional)
-6. `event-template.sol` (operacional)
-7. `result-template.sol` (operacional)
-8. `observation-template.sol` (operacional)
-9. `intent-template.sol` (fundacional)
-10. `context-template.sol` (fundacional)
-11. `evaluation-template.sol` (fundacional)
+1. `principle-template.sop` (estratégico)
+2. `guideline-template.sop` (normativo)
+3. `area-template.sop` (organizacional)
+4. `authority-template.sop` (soporte)
+5. `procedure-template.sop` (operacional)
+6. `event-template.sop` (operacional)
+7. `result-template.sop` (operacional)
+8. `observation-template.sop` (operacional)
+9. `intent-template.sop` (fundacional)
+10. `context-template.sop` (fundacional)
+11. `evaluation-template.sop` (fundacional)
 
 #### **2.2 Estructura Template Estándar**
 

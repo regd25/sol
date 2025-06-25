@@ -1,9 +1,9 @@
 {
   "name": "sol-yaml-support",
-  "version": "1.0.0-alpha",
+  "version": "0.0.3-dev",
   "publisher": "RandyGala",
   "displayName": "SOL - Semantic Operations Language Support",
-  "description": "VS Code extension providing comprehensive syntax highlighting, schema validation, semantic navigation and language support for Semantic Operations Language (.sol) files. Based on the SOL project: https://github.com/regd25/sol",
+  "description": "VS Code extension providing comprehensive syntax highlighting, schema validation, semantic navigation and language support for Semantic Operations Language (.sop) files. Based on the SOL project: https://github.com/regd25/sol",
   "author": {
     "name": "Randy Gala",
     "email": "randy@hexy.dev"
@@ -103,12 +103,12 @@
       {
         "language": "sol",
         "path": "./syntaxes/sol.tmLanguage.json",
-        "scopeName": "source.sol"
+        "scopeName": "source.sop"
       },
       {
         "language": "sol-yaml",
         "path": "./syntaxes/sol-yaml.tmLanguage.json",
-        "scopeName": "source.sol.yaml"
+        "scopeName": "source.sop.yaml"
       },
       {
         "language": "omd",
@@ -124,12 +124,12 @@
         ],
         "configuration": "./language-configuration.json",
         "extensions": [
-          ".sol"
+          ".sop"
         ],
         "id": "sol",
         "firstLine": "^#\\s*SOL\\s*-\\s*Semantic\\s*Operations\\s*Language",
         "filenames": [
-          "*.sol"
+          "*.sop"
         ]
       },
       {
@@ -139,8 +139,8 @@
         ],
         "configuration": "./language-configuration.json",
         "extensions": [
-          ".sol.yaml",
-          ".sol.yml"
+          ".sop.yaml",
+          ".sop.yml"
         ],
         "id": "sol-yaml"
       },
@@ -162,8 +162,8 @@
     "yamlValidation": [
       {
         "fileMatch": [
-          "*.sol.yaml",
-          "*.sol.yml"
+          "*.sop.yaml",
+          "*.sop.yml"
         ],
         "url": "./schemas/sol-schema.json"
       }
@@ -171,7 +171,7 @@
     "jsonValidation": [
       {
         "fileMatch": [
-          "*.sol"
+          "*.sop"
         ],
         "url": "./schemas/sol-schema.json"
       }

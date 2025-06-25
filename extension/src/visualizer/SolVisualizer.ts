@@ -95,8 +95,8 @@ export class SolVisualizer {
             references: [],
             referencedBy: [],
           }
-          // Use dot notation for SOL v2025.07
-          this.artifacts.set(`${artifactType}.${artifactId}`, currentArtifact)
+          // Use colon notation for SOL (correct format)
+          this.artifacts.set(`${artifactType}:${artifactId}`, currentArtifact)
         }
         continue
       }
@@ -107,11 +107,11 @@ export class SolVisualizer {
           /^(?:description|content|statement):\s*(.+)$/
         )
         if (descMatch) {
-          currentArtifact.description = descMatch[1].replace(/^"(.*)"$/, '$1')
+          currentArtifact.description = descMatch[1].replace(/^"(.*)"$/, "$1")
         }
 
-        // Extract references using dot notation (SOL v2025.07)
-        const refMatch = line.match(/([A-Z][a-zA-Z0-9]*)\.([A-Z][a-zA-Z0-9]*)/g)
+        // Extract references using colon notation (SOL format)
+        const refMatch = line.match(/([A-Z][a-zA-Z0-9]*):([A-Z][a-zA-Z0-9]*)/g)
         if (refMatch) {
           refMatch.forEach((ref) => {
             if (!currentArtifact!.references.includes(ref)) {
@@ -121,8 +121,8 @@ export class SolVisualizer {
         }
       }
 
-      // Parse process flows with new notation
-      if (currentArtifact?.type === "Process" && line.includes("Actor.")) {
+      // Parse process flows with colon notation
+      if (currentArtifact?.type === "Process" && line.includes("Actor:")) {
         if (!currentProcess) {
           currentProcess = {
             id: currentArtifact.id,
@@ -131,9 +131,9 @@ export class SolVisualizer {
           }
         }
 
-        // Match new flow notation: Actor.ActorId → "action"
+        // Match flow notation: Actor:ActorId → "action"
         const actorFlowMatch = line.match(
-          /Actor\.([A-Za-z0-9]*)\s*→\s*"([^"]+)"/
+          /Actor:([A-Za-z0-9]*)\s*→\s*"([^"]+)"/
         )
         if (actorFlowMatch) {
           const actor = actorFlowMatch[1]
@@ -178,7 +178,7 @@ export class SolVisualizer {
       if (metaIdMatch) {
         return metaIdMatch[1]
       }
-      
+
       // Also handle old format for backward compatibility
       const directIdMatch = lines[i].match(/^\s*(?:-\s*)?id:\s*([A-Za-z0-9_]+)/)
       if (directIdMatch) {
@@ -275,7 +275,7 @@ ${this.generateReferenceAnalysis()}
     if (mostReferenced.length > 0) {
       result += "### 🔥 Most Referenced Artifacts\n\n"
       for (const artifact of mostReferenced) {
-        result += `- **${artifact.type}.${artifact.id}** (${artifact.referencedBy.length} references)\n`
+        result += `- **${artifact.type}:${artifact.id}** (${artifact.referencedBy.length} references)\n`
       }
       result += "\n"
     }
@@ -288,7 +288,7 @@ ${this.generateReferenceAnalysis()}
     if (orphaned.length > 0) {
       result += "### 🔍 Orphaned Artifacts (No References)\n\n"
       for (const artifact of orphaned) {
-        result += `- **${artifact.type}.${artifact.id}** - Consider adding references or removing if unused\n`
+        result += `- **${artifact.type}:${artifact.id}** - Consider adding references or removing if unused\n`
       }
       result += "\n"
     }
@@ -530,7 +530,7 @@ export class VisualizerPanel {
       await this.updateVisualization(activeEditor.document)
     } else {
       this.panel.webview.html = this.getWebviewContent(
-        "# No SOL document active\n\nOpen a .sol file to see visualization."
+        "# No SOL document active\n\nOpen a .sop file to see visualization."
       )
     }
   }

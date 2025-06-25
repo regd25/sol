@@ -1,8 +1,8 @@
 /**
  * SOL Visualizer Tests
- * 
+ *
  * Tests to validate the visualization functionality and debug rendering issues.
- * 
+ *
  * @author Randy Gala <randy@hexy.dev>
  * @license MIT
  */
@@ -19,7 +19,8 @@ suite("SolVisualizer Tests", () => {
   })
 
   test("Should parse Area artifacts correctly", async () => {
-    const mockDocument = createMockDocument(`# SOL - Semantic Operations Language
+    const mockDocument =
+      createMockDocument(`# SOL - Semantic Operations Language
 # Version: v2025.07
 
 Area:
@@ -30,7 +31,7 @@ Area:
     status: "active"
     author: "Test Author"
   description: "Department responsible for all technology initiatives"
-  vision: Vision.DigitalTransformation
+  vision: Vision:DigitalTransformation
 
 Actor:
   meta:
@@ -40,24 +41,31 @@ Actor:
     status: "active"
     author: "Test Author"
   type: "Technical Leader"
-  area: Area.TechnologyDepartment
+  area: Area:TechnologyDepartment
 `)
 
     const visualization = await visualizer.generateVisualization(mockDocument)
-    
+
     console.log("Generated Visualization:")
     console.log("=".repeat(50))
     console.log(visualization)
     console.log("=".repeat(50))
 
     // Validate that Area artifacts are parsed
-    assert.ok(visualization.includes("TechnologyDepartment"), "Should include Area ID")
+    assert.ok(
+      visualization.includes("TechnologyDepartment"),
+      "Should include Area ID"
+    )
     assert.ok(visualization.includes("Area"), "Should include Area type")
-    assert.ok(visualization.length > 100, "Visualization should have substantial content")
+    assert.ok(
+      visualization.length > 100,
+      "Visualization should have substantial content"
+    )
   })
 
   test("Should generate organizational chart with Areas", async () => {
-    const mockDocument = createMockDocument(`# SOL - Semantic Operations Language
+    const mockDocument =
+      createMockDocument(`# SOL - Semantic Operations Language
 # Version: v2025.07
 
 Vision:
@@ -77,7 +85,7 @@ Area:
     status: "active"
     author: "Test Author"
   description: "Department responsible for all technology initiatives"
-  vision: Vision.DigitalTransformation
+  vision: Vision:DigitalTransformation
 
 Actor:
   meta:
@@ -88,7 +96,7 @@ Actor:
     author: "Test Author"
   type: "Technical Leader"
   capabilities: ["Team Management", "Technical Architecture", "Code Review"]
-  area: Area.TechnologyDepartment
+  area: Area:TechnologyDepartment
 
 Actor:
   meta:
@@ -99,7 +107,7 @@ Actor:
     author: "Test Author"
   type: "Development Role"
   capabilities: ["React", "TypeScript", "UI/UX"]
-  area: Area.TechnologyDepartment
+  area: Area:TechnologyDepartment
 
 Process:
   meta:
@@ -108,51 +116,73 @@ Process:
     created: "2024-01-01"
     status: "active"
     author: "Test Author"
-  vision: Vision.DigitalTransformation
-  area: Area.TechnologyDepartment
+  vision: Vision:DigitalTransformation
+  area: Area:TechnologyDepartment
   description: "Complete user registration workflow"
   steps:
-    - Actor.Frontend → "Render registration form with validation"
-    - Actor.Backend → "Validate user input and check duplicates"
-    - Actor.Backend → "Create user account in database"
-    - Actor.Frontend → "Display success confirmation"
+    - Actor:Frontend → "Render registration form with validation"
+    - Actor:Backend → "Validate user input and check duplicates"
+    - Actor:Backend → "Create user account in database"
+    - Actor:Frontend → "Display success confirmation"
   endCondition: "User successfully registered and confirmed"
 `)
 
     const visualization = await visualizer.generateVisualization(mockDocument)
-    
+
     console.log("Organizational Chart Test:")
     console.log("=".repeat(50))
     console.log(visualization)
     console.log("=".repeat(50))
 
     // Validate content structure
-    assert.ok(visualization.includes("📊 SOL Document Analysis Report"), "Should have report header")
-    assert.ok(visualization.includes("TechnologyDepartment"), "Should include Area")
+    assert.ok(
+      visualization.includes("📊 SOL Document Analysis Report"),
+      "Should have report header"
+    )
+    assert.ok(
+      visualization.includes("TechnologyDepartment"),
+      "Should include Area"
+    )
     assert.ok(visualization.includes("DevTeamLead"), "Should include Actor")
-    assert.ok(visualization.includes("UserRegistration"), "Should include Process")
-    
+    assert.ok(
+      visualization.includes("UserRegistration"),
+      "Should include Process"
+    )
+
     // Validate Mermaid diagrams are generated
-    assert.ok(visualization.includes("```mermaid"), "Should contain Mermaid diagrams")
-    assert.ok(visualization.includes("graph"), "Should contain graph definitions")
+    assert.ok(
+      visualization.includes("```mermaid"),
+      "Should contain Mermaid diagrams"
+    )
+    assert.ok(
+      visualization.includes("graph"),
+      "Should contain graph definitions"
+    )
   })
 
   test("Should handle empty document gracefully", async () => {
     const mockDocument = createMockDocument("")
 
     const visualization = await visualizer.generateVisualization(mockDocument)
-    
+
     console.log("Empty Document Test:")
     console.log("=".repeat(30))
     console.log(visualization)
     console.log("=".repeat(30))
 
-    assert.ok(visualization.length > 0, "Should generate content even for empty document")
-    assert.ok(visualization.includes("📊 SOL Document Analysis Report"), "Should have report header")
+    assert.ok(
+      visualization.length > 0,
+      "Should generate content even for empty document"
+    )
+    assert.ok(
+      visualization.includes("📊 SOL Document Analysis Report"),
+      "Should have report header"
+    )
   })
 
   test("Should generate process flow diagrams", async () => {
-    const mockDocument = createMockDocument(`# SOL - Semantic Operations Language
+    const mockDocument =
+      createMockDocument(`# SOL - Semantic Operations Language
 # Version: v2025.07
 
 Actor:
@@ -180,40 +210,58 @@ Process:
     created: "2024-01-01"
     status: "active"
     author: "Test Author"
-  vision: Vision.DigitalTransformation
+  vision: Vision:DigitalTransformation
   description: "Test process for validation"
   steps:
-    - Actor.Frontend → "Step 1"
-    - Actor.Backend → "Step 2"
+    - Actor:Frontend → "Step 1"
+    - Actor:Backend → "Step 2"
   endCondition: "Process completed"
 `)
 
     const visualization = await visualizer.generateVisualization(mockDocument)
-    
+
     console.log("Process Flow Test:")
     console.log("=".repeat(40))
     console.log(visualization)
     console.log("=".repeat(40))
 
-    assert.ok(visualization.includes("Process Flow"), "Should include process flow section")
-    assert.ok(visualization.includes("TestProcess"), "Should include process ID")
+    assert.ok(
+      visualization.includes("Process Flow"),
+      "Should include process flow section"
+    )
+    assert.ok(
+      visualization.includes("TestProcess"),
+      "Should include process ID"
+    )
   })
 
   test("Should validate webview HTML generation", () => {
     const mockContent = "# Test Content\n\nThis is a test."
-    
+
     // Simulate the webview content generation
     const webviewContent = generateWebviewContent(mockContent)
-    
+
     console.log("Webview HTML Test:")
     console.log("=".repeat(40))
     console.log(webviewContent.substring(0, 500) + "...")
     console.log("=".repeat(40))
 
-    assert.ok(webviewContent.includes("<!DOCTYPE html>"), "Should be valid HTML")
-    assert.ok(webviewContent.includes("mermaid"), "Should include Mermaid library")
-    assert.ok(webviewContent.includes("Test Content"), "Should include the content")
-    assert.ok(webviewContent.includes("vscode-editor-background"), "Should use VSCode theming")
+    assert.ok(
+      webviewContent.includes("<!DOCTYPE html>"),
+      "Should be valid HTML"
+    )
+    assert.ok(
+      webviewContent.includes("mermaid"),
+      "Should include Mermaid library"
+    )
+    assert.ok(
+      webviewContent.includes("Test Content"),
+      "Should include the content"
+    )
+    assert.ok(
+      webviewContent.includes("vscode-editor-background"),
+      "Should use VSCode theming"
+    )
   })
 })
 
@@ -221,29 +269,34 @@ Process:
 function createMockDocument(content: string): vscode.TextDocument {
   return {
     getText: () => content,
-    uri: vscode.Uri.parse("test://test.sol"),
-    fileName: "test.sol",
+    uri: vscode.Uri.parse("test://test.sop"),
+    fileName: "test.sop",
     languageId: "sol",
     version: 1,
     isDirty: false,
     isClosed: false,
     save: async () => true,
     eol: vscode.EndOfLine.LF,
-    lineCount: content.split('\n').length,
+    lineCount: content.split("\n").length,
     lineAt: (line: number) => ({
       lineNumber: line,
-      text: content.split('\n')[line] || '',
-      range: new vscode.Range(line, 0, line, content.split('\n')[line]?.length || 0),
+      text: content.split("\n")[line] || "",
+      range: new vscode.Range(
+        line,
+        0,
+        line,
+        content.split("\n")[line]?.length || 0
+      ),
       rangeIncludingLineBreak: new vscode.Range(line, 0, line + 1, 0),
       firstNonWhitespaceCharacterIndex: 0,
-      isEmptyOrWhitespace: false
+      isEmptyOrWhitespace: false,
     }),
     offsetAt: (position: vscode.Position) => 0,
     positionAt: (offset: number) => new vscode.Position(0, 0),
     getText: (range?: vscode.Range) => content,
     getWordRangeAtPosition: () => undefined,
     validateRange: (range: vscode.Range) => range,
-    validatePosition: (position: vscode.Position) => position
+    validatePosition: (position: vscode.Position) => position,
   } as vscode.TextDocument
 }
 
@@ -346,4 +399,4 @@ function generateWebviewContent(markdownContent: string): string {
     </script>
 </body>
 </html>`
-} 
+}

@@ -89,9 +89,9 @@ function initializeLanguageServer(context) {
         synchronize: {
             // Notify the server about file changes to SOL files
             fileEvents: [
-                vscode.workspace.createFileSystemWatcher("**/*.sol"),
-                vscode.workspace.createFileSystemWatcher("**/*.sol.yaml"),
-                vscode.workspace.createFileSystemWatcher("**/*.sol.yml"),
+                vscode.workspace.createFileSystemWatcher("**/*.sop"),
+                vscode.workspace.createFileSystemWatcher("**/*.sop.yaml"),
+                vscode.workspace.createFileSystemWatcher("**/*.sop.yml"),
             ],
         },
     };

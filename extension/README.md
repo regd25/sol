@@ -1,6 +1,6 @@
 # SOL - Semantic Operations Language Support
 
-Esta extensión de VS Code proporciona soporte completo para el **Semantic Operations Language (SOL)**, incluyendo resaltado de sintaxis, validación de esquemas, navegación semántica y soporte de lenguaje para archivos `.sol`, `.sol.yaml` y `.sol.yml`.
+Esta extensión de VS Code proporciona soporte completo para el **Semantic Operations Language (SOL)**, incluyendo resaltado de sintaxis, validación de esquemas, navegación semántica y soporte de lenguaje para archivos `.sop`, `.sop.yaml` y `.sop.yml`.
 
 ## 🎯 Sobre SOL
 
@@ -47,15 +47,15 @@ Para más información sobre SOL, visita el [repositorio oficial](https://github
 
 ## 📁 Extensiones de Archivo Soportadas
 
-- `.sol` - Archivos SOL puros
-- `.sol.yaml` - Archivos SOL en formato YAML
-- `.sol.yml` - Archivos SOL en formato YAML (extensión corta)
+- `.sop` - Archivos SOL puros
+- `.sop.yaml` - Archivos SOL en formato YAML
+- `.sop.yml` - Archivos SOL en formato YAML (extensión corta)
 - `.omd` - Operations Markdown
 
 ## 🚀 Uso
 
 1. Instala la extensión
-2. Abre cualquier archivo `.sol`, `.sol.yaml` o `.sol.yml`
+2. Abre cualquier archivo `.sop`, `.sop.yaml` o `.sop.yml`
 3. Disfruta del soporte completo de SOL con:
    - Resaltado de sintaxis automático
    - Validación en tiempo real
@@ -118,22 +118,22 @@ Process:
 ```
 proyecto/
 ├── vision/
-│   └── strategic-vision.sol
+│   └── strategic-vision.sop
 ├── domains/
-│   ├── operational-domain.sol.yaml
-│   └── technical-domain.sol.yaml
+│   ├── operational-domain.sop.yaml
+│   └── technical-domain.sop.yaml
 ├── processes/
-│   ├── onboarding-process.sol
-│   └── optimization-process.sol.yaml
+│   ├── onboarding-process.sop
+│   └── optimization-process.sop.yaml
 └── actors/
-    └── organizational-actors.sol.yaml
+    └── organizational-actors.sop.yaml
 ```
 
 ## 🎨 Características Técnicas
 
 ### Gramática de Sintaxis
-- Definición completa de TextMate para archivos `.sol`
-- Gramática especializada para archivos `.sol.yaml`
+- Definición completa de TextMate para archivos `.sop`
+- Gramática especializada para archivos `.sop.yaml`
 - Reconocimiento de patrones semánticos SOL
 - Soporte para referencias cruzadas entre artefactos
 
