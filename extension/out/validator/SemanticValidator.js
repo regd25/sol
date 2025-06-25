@@ -349,12 +349,12 @@ class SemanticValidator {
         const duplicateBlocks = this.findDuplicateFoundationalBlocks(text);
         for (const duplicate of duplicateBlocks) {
             warnings.push({
-                type: 'best-practice',
+                type: "best-practice",
                 message: `Duplicate foundational block "${duplicate.type}" found. Consider extracting to separate ${duplicate.type.charAt(0).toUpperCase() + duplicate.type.slice(1)} artifact`,
                 line: duplicate.line,
                 column: 0,
                 suggestion: `Create ${duplicate.type.charAt(0).toUpperCase() + duplicate.type.slice(1)}:${duplicate.suggestedId} and reference via uses`,
-                ruleId: 'DRY_COMPLIANCE'
+                ruleId: "DRY_COMPLIANCE",
             });
         }
         return {
@@ -362,7 +362,7 @@ class SemanticValidator {
             errors,
             warnings,
             artifacts: [],
-            processingTime: 0
+            processingTime: 0,
         };
     }
     // ====== PRIVATE HELPER METHODS ======
@@ -372,7 +372,7 @@ class SemanticValidator {
         while ((match = artifactPattern.exec(text)) !== null) {
             const artifactType = match[1];
             const artifactId = match[2] || match[3];
-            const line = text.substring(0, match.index).split('\n').length - 1;
+            const line = text.substring(0, match.index).split("\n").length - 1;
             if (artifactId) {
                 // Use colon notation for SOL (correct format)
                 const fullId = `${artifactType}:${artifactId}`;
@@ -381,7 +381,7 @@ class SemanticValidator {
                     id: artifactId,
                     line,
                     references: [],
-                    referencedBy: []
+                    referencedBy: [],
                 });
             }
         }
@@ -447,15 +447,20 @@ class SemanticValidator {
     generateImprovementWarnings(text, artifacts) {
         const warnings = [];
         // Check for missing foundational artifacts
-        const missingFoundational = ['Intent', 'Context', 'Authority', 'Evaluation'].filter(type => !Array.from(artifacts.keys()).some(key => key.startsWith(type + ':')));
+        const missingFoundational = [
+            "Intent",
+            "Context",
+            "Authority",
+            "Evaluation",
+        ].filter((type) => !Array.from(artifacts.keys()).some((key) => key.startsWith(type + ":")));
         if (missingFoundational.length > 0) {
             warnings.push({
-                type: 'recommendation',
-                message: `Consider adding foundational artifacts: ${missingFoundational.join(', ')}`,
+                type: "recommendation",
+                message: `Consider adding foundational artifacts: ${missingFoundational.join(", ")}`,
                 line: 0,
                 column: 0,
-                suggestion: 'Foundational artifacts improve semantic coherence and reduce duplication',
-                ruleId: 'MISSING_FOUNDATIONAL'
+                suggestion: "Foundational artifacts improve semantic coherence and reduce duplication",
+                ruleId: "MISSING_FOUNDATIONAL",
             });
         }
         return warnings;
