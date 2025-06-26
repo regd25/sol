@@ -15,6 +15,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TestUtils = void 0;
+require("@types/jest");
 // Custom Jest matchers for SOL testing
 expect.extend({
     toBeValidSOLDocument(received) {

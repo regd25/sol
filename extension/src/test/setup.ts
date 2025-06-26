@@ -13,6 +13,8 @@
  * @license MIT
  */
 
+import '@types/jest';
+
 // Extend Jest matchers for better SOL-specific assertions
 declare global {
   namespace jest {

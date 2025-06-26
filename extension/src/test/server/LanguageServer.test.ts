@@ -13,8 +13,8 @@
  * @license MIT
  */
 
+import { TextDocument } from 'vscode-languageserver-textdocument'
 import {
-  TextDocument,
   Position,
   Range,
   CompletionItem,
@@ -24,7 +24,7 @@ import {
   SymbolInformation,
   SymbolKind,
   TextEdit,
-} from 'vscode-languageserver-textdocument'
+} from 'vscode-languageserver'
 import { TestUtils } from '../setup'
 
 // Mock the language server module

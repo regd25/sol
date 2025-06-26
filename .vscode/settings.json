@@ -1,18 +1,23 @@
 {
-  "files.enableTrash": false,
-  "workbench.editor.highlightModifiedTabs": false,
-  "workbench.editor.limit.value": 5,
-  "workbench.editor.openPositioning": "right",
-  "workbench.editor.pinnedTabSizing": "normal",
-  "workbench.activityBar.location": "top",
-  "workbench.activityBar.orientation": "horizontal",
-  "workbench.colorTheme": "SynthWave '84",
-  "workbench.tree.indent": 4,
-  "workbench.tree.renderIndentGuides": "onHover",
-  "workbench.tree.stickyScrollMaxItemCount": 7,
-  "breadcrumbs.enabled": true,
-  "markdown.preview.breaks": true,
-  "markdown.preview.linkify": true,
-  "markdown.extension.preview.autoShowPreviewToSide": true,
-  "editor.tabSize": 8
+    "files.associations": {
+        "*.sop": "sol-yaml"
+    },
+    "[sol-yaml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.wordWrap": "on"
+    },
+    "workbench.colorTheme": "SOL Synth84",
+    "editor.semanticHighlighting.enabled": true,
+    "editor.semanticTokenColorCustomizations": {
+        "[SOL Synth84]": {
+            "enabled": true,
+            "rules": {
+                "property": "#FF6B9D",
+                "keyword": "#45A9F9", 
+                "string": "#6BCF7F",
+                "comment": "#7C7C7C"
+            }
+        }
+    }
 }

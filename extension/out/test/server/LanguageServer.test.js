@@ -14,7 +14,7 @@
  * @license MIT
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_textdocument_1 = require("vscode-languageserver-textdocument");
+const vscode_languageserver_1 = require("vscode-languageserver");
 const setup_1 = require("../setup");
 // Mock the language server module
 const mockLanguageServer = {
@@ -79,25 +79,25 @@ describe('SOL Language Server', () => {
     });
     describe('Completion Provider', () => {
         test('should provide artifact type completions', () => {
-            const position = vscode_languageserver_textdocument_1.Position.create(1, 0);
+            const position = vscode_languageserver_1.Position.create(1, 0);
             const expectedCompletions = [
                 {
                     label: 'Vision',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Class,
+                    kind: vscode_languageserver_1.CompletionItemKind.Class,
                     detail: 'SOL Vision Artifact',
                     documentation: 'Defines the strategic vision for the system',
                     insertText: 'Vision:\n  - id: ${1:VisionId}\n    content: "${2:Vision description}"',
                 },
                 {
                     label: 'Domain',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Class,
+                    kind: vscode_languageserver_1.CompletionItemKind.Class,
                     detail: 'SOL Domain Artifact',
                     documentation: 'Defines a business or technical domain',
                     insertText: 'Domain:\n  id: ${1:DomainId}\n  description: "${2:Domain description}"',
                 },
                 {
                     label: 'Process',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Class,
+                    kind: vscode_languageserver_1.CompletionItemKind.Class,
                     detail: 'SOL Process Artifact',
                     documentation: 'Defines a business or technical process',
                     insertText: 'Process:\n  - id: ${1:ProcessId}\n    description: "${2:Process description}"',
@@ -109,24 +109,24 @@ describe('SOL Language Server', () => {
             expect(result).toEqual(expectedCompletions);
         });
         test('should provide field completions within artifacts', () => {
-            const position = vscode_languageserver_textdocument_1.Position.create(3, 4); // Inside Vision artifact
+            const position = vscode_languageserver_1.Position.create(3, 4); // Inside Vision artifact
             const context = 'Vision:\n  - id: TestVision\n    |'; // Cursor position
             const expectedCompletions = [
                 {
                     label: 'content',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Field,
+                    kind: vscode_languageserver_1.CompletionItemKind.Field,
                     detail: 'Vision content description',
                     insertText: 'content: "${1:Vision content}"',
                 },
                 {
                     label: 'tags',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Field,
+                    kind: vscode_languageserver_1.CompletionItemKind.Field,
                     detail: 'Vision tags',
                     insertText: 'tags:\n  - ${1:tag}',
                 },
                 {
                     label: 'actors',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Field,
+                    kind: vscode_languageserver_1.CompletionItemKind.Field,
                     detail: 'Related actors',
                     insertText: 'actors:\n  - ${1:ActorId}',
                 },
@@ -148,11 +148,11 @@ Domain:
   vision: |` // Cursor at end
             ;
             mockDocument.getText.mockReturnValue(documentText);
-            const position = vscode_languageserver_textdocument_1.Position.create(8, 11); // After "vision: "
+            const position = vscode_languageserver_1.Position.create(8, 11); // After "vision: "
             const expectedCompletions = [
                 {
                     label: 'MainVision',
-                    kind: vscode_languageserver_textdocument_1.CompletionItemKind.Reference,
+                    kind: vscode_languageserver_1.CompletionItemKind.Reference,
                     detail: 'Vision artifact reference',
                     documentation: 'Main system vision',
                 },
@@ -165,7 +165,7 @@ Domain:
     });
     describe('Hover Provider', () => {
         test('should provide hover information for artifact types', () => {
-            const position = vscode_languageserver_textdocument_1.Position.create(2, 0); // On "Vision:" line
+            const position = vscode_languageserver_1.Position.create(2, 0); // On "Vision:" line
             const expectedHover = {
                 contents: {
                     kind: 'markdown',
@@ -179,7 +179,7 @@ Defines the strategic vision and goals for the system or domain.
 - \`tags\`: Optional tags for categorization
 - \`actors\`: Related actors involved in the vision`,
                 },
-                range: vscode_languageserver_textdocument_1.Range.create(2, 0, 2, 7), // "Vision:" range
+                range: vscode_languageserver_1.Range.create(2, 0, 2, 7), // "Vision:" range
             };
             mockLanguageServer.onHover.mockReturnValue(expectedHover);
             const result = mockLanguageServer.onHover(mockDocument, position);
@@ -189,7 +189,7 @@ Defines the strategic vision and goals for the system or domain.
         test('should provide hover information for artifact references', () => {
             const documentText = setup_1.TestUtils.createMinimalSOLDocument();
             mockDocument.getText.mockReturnValue(documentText);
-            const position = vscode_languageserver_textdocument_1.Position.create(8, 15); // On "TestVision" reference
+            const position = vscode_languageserver_1.Position.create(8, 15); // On "TestVision" reference
             const expectedHover = {
                 contents: {
                     kind: 'markdown',
@@ -200,7 +200,7 @@ Test vision for validation
 **Referenced by:**
 - Domain: TestDomain`,
                 },
-                range: vscode_languageserver_textdocument_1.Range.create(8, 10, 8, 20), // "TestVision" range
+                range: vscode_languageserver_1.Range.create(8, 10, 8, 20), // "TestVision" range
             };
             mockLanguageServer.onHover.mockReturnValue(expectedHover);
             const result = mockLanguageServer.onHover(mockDocument, position);
@@ -208,7 +208,7 @@ Test vision for validation
             expect(result === null || result === void 0 ? void 0 : result.contents).toBeDefined();
         });
         test('should provide hover for SOL fields', () => {
-            const position = vscode_languageserver_textdocument_1.Position.create(3, 4); // On "id:" field
+            const position = vscode_languageserver_1.Position.create(3, 4); // On "id:" field
             const expectedHover = {
                 contents: {
                     kind: 'markdown',
@@ -221,7 +221,7 @@ Unique identifier for the artifact. Must follow SOL naming conventions:
 
 **Example:** \`TestVision\`, \`CoreDomain\`, \`MainProcess\``,
                 },
-                range: vscode_languageserver_textdocument_1.Range.create(3, 4, 3, 6), // "id" range
+                range: vscode_languageserver_1.Range.create(3, 4, 3, 6), // "id" range
             };
             mockLanguageServer.onHover.mockReturnValue(expectedHover);
             const result = mockLanguageServer.onHover(mockDocument, position);
@@ -233,10 +233,10 @@ Unique identifier for the artifact. Must follow SOL naming conventions:
         test('should provide definition for artifact references', () => {
             const documentText = setup_1.TestUtils.createMinimalSOLDocument();
             mockDocument.getText.mockReturnValue(documentText);
-            const position = vscode_languageserver_textdocument_1.Position.create(8, 15); // On "TestVision" reference
+            const position = vscode_languageserver_1.Position.create(8, 15); // On "TestVision" reference
             const expectedLocation = {
                 uri: mockDocument.uri,
-                range: vscode_languageserver_textdocument_1.Range.create(2, 6, 2, 16), // "TestVision" definition range
+                range: vscode_languageserver_1.Range.create(2, 6, 2, 16), // "TestVision" definition range
             };
             mockLanguageServer.onDefinition.mockReturnValue(expectedLocation);
             const result = mockLanguageServer.onDefinition(mockDocument, position);
@@ -256,10 +256,10 @@ Domain:
   id: TestDomain
   vision: Vision1  # Should go to first Vision`;
             mockDocument.getText.mockReturnValue(documentText);
-            const position = vscode_languageserver_textdocument_1.Position.create(10, 11); // On "Vision1" reference
+            const position = vscode_languageserver_1.Position.create(10, 11); // On "Vision1" reference
             const expectedLocation = {
                 uri: mockDocument.uri,
-                range: vscode_languageserver_textdocument_1.Range.create(3, 6, 3, 13), // First "Vision1" definition
+                range: vscode_languageserver_1.Range.create(3, 6, 3, 13), // First "Vision1" definition
             };
             mockLanguageServer.onDefinition.mockReturnValue(expectedLocation);
             const result = mockLanguageServer.onDefinition(mockDocument, position);
@@ -267,7 +267,7 @@ Domain:
             expect(result).toEqual(expectedLocation);
         });
         test('should return null for undefined references', () => {
-            const position = vscode_languageserver_textdocument_1.Position.create(10, 15); // On non-existent reference
+            const position = vscode_languageserver_1.Position.create(10, 15); // On non-existent reference
             mockLanguageServer.onDefinition.mockReturnValue(null);
             const result = mockLanguageServer.onDefinition(mockDocument, position);
             expect(result).toBeNull();
@@ -280,35 +280,35 @@ Domain:
             const expectedSymbols = [
                 {
                     name: 'Vision',
-                    kind: vscode_languageserver_textdocument_1.SymbolKind.Class,
+                    kind: vscode_languageserver_1.SymbolKind.Class,
                     location: {
                         uri: mockDocument.uri,
-                        range: vscode_languageserver_textdocument_1.Range.create(2, 0, 5, 0),
+                        range: vscode_languageserver_1.Range.create(2, 0, 5, 0),
                     },
                 },
                 {
                     name: 'TestVision',
-                    kind: vscode_languageserver_textdocument_1.SymbolKind.Object,
+                    kind: vscode_languageserver_1.SymbolKind.Object,
                     location: {
                         uri: mockDocument.uri,
-                        range: vscode_languageserver_textdocument_1.Range.create(3, 2, 4, 0),
+                        range: vscode_languageserver_1.Range.create(3, 2, 4, 0),
                     },
                     containerName: 'Vision',
                 },
                 {
                     name: 'Domain',
-                    kind: vscode_languageserver_textdocument_1.SymbolKind.Class,
+                    kind: vscode_languageserver_1.SymbolKind.Class,
                     location: {
                         uri: mockDocument.uri,
-                        range: vscode_languageserver_textdocument_1.Range.create(6, 0, 9, 0),
+                        range: vscode_languageserver_1.Range.create(6, 0, 9, 0),
                     },
                 },
                 {
                     name: 'TestDomain',
-                    kind: vscode_languageserver_textdocument_1.SymbolKind.Object,
+                    kind: vscode_languageserver_1.SymbolKind.Object,
                     location: {
                         uri: mockDocument.uri,
-                        range: vscode_languageserver_textdocument_1.Range.create(7, 2, 9, 0),
+                        range: vscode_languageserver_1.Range.create(7, 2, 9, 0),
                     },
                     containerName: 'Domain',
                 },
@@ -342,10 +342,10 @@ Process:
             const expectedSymbolCount = 8; // 4 artifact types + 4 artifact instances
             mockLanguageServer.onDocumentSymbol.mockReturnValue(Array(expectedSymbolCount).fill(null).map((_, i) => ({
                 name: `Symbol${i}`,
-                kind: vscode_languageserver_textdocument_1.SymbolKind.Object,
+                kind: vscode_languageserver_1.SymbolKind.Object,
                 location: {
                     uri: mockDocument.uri,
-                    range: vscode_languageserver_textdocument_1.Range.create(i, 0, i + 1, 0),
+                    range: vscode_languageserver_1.Range.create(i, 0, i + 1, 0),
                 },
             })));
             const result = mockLanguageServer.onDocumentSymbol(mockDocument);
@@ -364,7 +364,7 @@ id:TestDomain
 vision:TestVision`;
             const expectedEdits = [
                 {
-                    range: vscode_languageserver_textdocument_1.Range.create(0, 0, 6, 0),
+                    range: vscode_languageserver_1.Range.create(0, 0, 6, 0),
                     newText: `# SOL - Semantic Operations Language
 
 Vision:
@@ -389,7 +389,7 @@ Domain:
             expect(result).toEqual(expectedEdits);
         });
         test('should format document range', () => {
-            const range = vscode_languageserver_textdocument_1.Range.create(2, 0, 4, 0); // Format only Vision section
+            const range = vscode_languageserver_1.Range.create(2, 0, 4, 0); // Format only Vision section
             const formattingOptions = {
                 tabSize: 2,
                 insertSpaces: true,
@@ -416,7 +416,7 @@ Domain:
             };
             const expectedEdits = [
                 {
-                    range: vscode_languageserver_textdocument_1.Range.create(0, 0, 3, 0),
+                    range: vscode_languageserver_1.Range.create(0, 0, 3, 0),
                     newText: `Vision:
 \t- id: TestVision
 \t\tcontent: "Test content"`,
@@ -436,16 +436,16 @@ SomeRandomStuff:
             mockDocument.getText.mockReturnValue(malformedDocument);
             // All providers should handle malformed documents without crashing
             expect(() => {
-                mockLanguageServer.onCompletion(mockDocument, vscode_languageserver_textdocument_1.Position.create(1, 0));
-                mockLanguageServer.onHover(mockDocument, vscode_languageserver_textdocument_1.Position.create(1, 0));
-                mockLanguageServer.onDefinition(mockDocument, vscode_languageserver_textdocument_1.Position.create(1, 0));
+                mockLanguageServer.onCompletion(mockDocument, vscode_languageserver_1.Position.create(1, 0));
+                mockLanguageServer.onHover(mockDocument, vscode_languageserver_1.Position.create(1, 0));
+                mockLanguageServer.onDefinition(mockDocument, vscode_languageserver_1.Position.create(1, 0));
                 mockLanguageServer.onDocumentSymbol(mockDocument);
             }).not.toThrow();
         });
         test('should handle empty documents', () => {
             ;
             mockDocument.getText.mockReturnValue('');
-            const position = vscode_languageserver_textdocument_1.Position.create(0, 0);
+            const position = vscode_languageserver_1.Position.create(0, 0);
             mockLanguageServer.onCompletion.mockReturnValue([]);
             mockLanguageServer.onHover.mockReturnValue(null);
             mockLanguageServer.onDefinition.mockReturnValue(null);
@@ -458,7 +458,7 @@ SomeRandomStuff:
         test('should handle invalid positions gracefully', () => {
             const documentText = setup_1.TestUtils.createMinimalSOLDocument();
             mockDocument.getText.mockReturnValue(documentText);
-            const invalidPosition = vscode_languageserver_textdocument_1.Position.create(999, 999); // Way beyond document end
+            const invalidPosition = vscode_languageserver_1.Position.create(999, 999); // Way beyond document end
             mockLanguageServer.onCompletion.mockReturnValue([]);
             mockLanguageServer.onHover.mockReturnValue(null);
             mockLanguageServer.onDefinition.mockReturnValue(null);
@@ -472,17 +472,17 @@ SomeRandomStuff:
             // All language features should work consistently together
             const document = setup_1.TestUtils.createMinimalSOLDocument();
             mockDocument.getText.mockReturnValue(document);
-            const position = vscode_languageserver_textdocument_1.Position.create(3, 6); // On "TestVision" id
+            const position = vscode_languageserver_1.Position.create(3, 6); // On "TestVision" id
             // Mock consistent responses
             mockLanguageServer.onCompletion.mockReturnValue([
-                { label: 'TestVision', kind: vscode_languageserver_textdocument_1.CompletionItemKind.Reference }
+                { label: 'TestVision', kind: vscode_languageserver_1.CompletionItemKind.Reference }
             ]);
             mockLanguageServer.onHover.mockReturnValue({
                 contents: { kind: 'markdown', value: '**Vision: TestVision**' }
             });
             mockLanguageServer.onDefinition.mockReturnValue({
                 uri: mockDocument.uri,
-                range: vscode_languageserver_textdocument_1.Range.create(3, 6, 3, 16)
+                range: vscode_languageserver_1.Range.create(3, 6, 3, 16)
             });
             const completion = mockLanguageServer.onCompletion(mockDocument, position);
             const hover = mockLanguageServer.onHover(mockDocument, position);
@@ -520,7 +520,7 @@ Referenced by:
 - Process: CoreProcess`
                 }
             });
-            const hover = mockLanguageServer.onHover(mockDocument, vscode_languageserver_textdocument_1.Position.create(3, 6));
+            const hover = mockLanguageServer.onHover(mockDocument, vscode_languageserver_1.Position.create(3, 6));
             expect(hover.contents.value).toContain('Referenced by');
             expect(hover.contents.value).toContain('CoreDomain');
             expect(hover.contents.value).toContain('CoreProcess');

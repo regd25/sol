@@ -11,10 +11,10 @@ import * as assert from "assert"
 import * as vscode from "vscode"
 import { SolVisualizer, ArtifactNode } from "../../visualizer/SolVisualizer"
 
-suite("SolVisualizer Tests", () => {
+describe("SolVisualizer Tests", () => {
   let visualizer: SolVisualizer
 
-  setup(() => {
+  beforeEach(() => {
     visualizer = new SolVisualizer()
   })
 
@@ -267,37 +267,39 @@ Process:
 
 // Helper functions
 function createMockDocument(content: string): vscode.TextDocument {
+  const lines = content.split("\n");
+  
   return {
-    getText: () => content,
     uri: vscode.Uri.parse("test://test.sop"),
     fileName: "test.sop",
     languageId: "sol",
     version: 1,
     isDirty: false,
     isClosed: false,
+    isUntitled: false,
+    encoding: 'utf8',
     save: async () => true,
     eol: vscode.EndOfLine.LF,
-    lineCount: content.split("\n").length,
-    lineAt: (line: number) => ({
-      lineNumber: line,
-      text: content.split("\n")[line] || "",
-      range: new vscode.Range(
-        line,
-        0,
-        line,
-        content.split("\n")[line]?.length || 0
-      ),
-      rangeIncludingLineBreak: new vscode.Range(line, 0, line + 1, 0),
-      firstNonWhitespaceCharacterIndex: 0,
-      isEmptyOrWhitespace: false,
-    }),
+    lineCount: lines.length,
+    lineAt: ((lineOrPosition: number | vscode.Position) => {
+      const lineNumber = typeof lineOrPosition === 'number' ? lineOrPosition : lineOrPosition.line;
+      const text = lines[lineNumber] || "";
+      return {
+        lineNumber,
+        text,
+        range: new vscode.Range(lineNumber, 0, lineNumber, text.length),
+        rangeIncludingLineBreak: new vscode.Range(lineNumber, 0, lineNumber + 1, 0),
+        firstNonWhitespaceCharacterIndex: 0,
+        isEmptyOrWhitespace: text.trim().length === 0,
+      };
+    }) as any,
     offsetAt: (position: vscode.Position) => 0,
     positionAt: (offset: number) => new vscode.Position(0, 0),
     getText: (range?: vscode.Range) => content,
     getWordRangeAtPosition: () => undefined,
     validateRange: (range: vscode.Range) => range,
     validatePosition: (position: vscode.Position) => position,
-  } as vscode.TextDocument
+  } as unknown as vscode.TextDocument
 }
 
 function generateWebviewContent(markdownContent: string): string {

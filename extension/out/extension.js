@@ -104,8 +104,13 @@ function registerSolCommands(context) {
     const solFormatter = new SolFormatter_1.SolFormatter();
     const documentLinkProvider = new DocumentLinkProvider_1.DocumentLinkProvider();
     const definitionProvider = new DefinitionProvider_1.DefinitionProvider();
-    // Register providers
-    context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider(["sol", "sol-yaml"], {
+    // Import CompletionProvider
+    const { CompletionProvider } = require("./providers/CompletionProvider");
+    const completionProvider = new CompletionProvider();
+    // Register providers for all SOL languages
+    const solLanguages = ["sol", "sol-yaml", "sol-markdown"];
+    // Register formatting provider
+    context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider(solLanguages, {
         provideDocumentFormattingEdits(document, options, token) {
             const formatted = solFormatter.formatDocument(document.getText(), {
                 insertSpaces: options.insertSpaces,
@@ -117,7 +122,40 @@ function registerSolCommands(context) {
             const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
             return [vscode.TextEdit.replace(fullRange, formatted)];
         },
-    }), vscode.languages.registerDocumentLinkProvider(["sol", "sol-yaml"], documentLinkProvider), vscode.languages.registerDefinitionProvider(["sol", "sol-yaml"], definitionProvider));
+    }));
+    // Register document link provider
+    context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(solLanguages, documentLinkProvider));
+    // Register definition provider (Go to Definition)
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider(solLanguages, definitionProvider));
+    // Register completion provider (IntelliSense)
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(solLanguages, completionProvider, ":", // Trigger completion after ":"
+    ".", // Trigger completion after "." for hierarchical references
+    " " // Trigger completion after space
+    ));
+    // Register hover provider for contextual information
+    const hoverProvider = {
+        provideHover(document, position, token) {
+            const wordRange = document.getWordRangeAtPosition(position, /(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\s*:\s*([A-Z][a-zA-Z0-9_]*(?:\.[A-Z][a-zA-Z0-9_]*)*)/);
+            if (!wordRange) {
+                return undefined;
+            }
+            const text = document.getText(wordRange);
+            const match = text.match(/(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\s*:\s*([A-Z][a-zA-Z0-9_]*(?:\.[A-Z][a-zA-Z0-9_]*)*)/);
+            if (!match) {
+                return undefined;
+            }
+            const artifactType = match[1];
+            const artifactId = match[2];
+            const markdown = new vscode.MarkdownString();
+            markdown.appendMarkdown(`**SOL ${artifactType} Reference**\n\n`);
+            markdown.appendMarkdown(`- **Type**: ${artifactType}\n`);
+            markdown.appendMarkdown(`- **ID**: ${artifactId}\n`);
+            markdown.appendMarkdown(`- **Category**: ${getArtifactCategory(artifactType)}\n\n`);
+            markdown.appendMarkdown(getArtifactDescription(artifactType));
+            return new vscode.Hover(markdown, wordRange);
+        }
+    };
+    context.subscriptions.push(vscode.languages.registerHoverProvider(solLanguages, hoverProvider));
     // Command: Validate Semantic Coherence (Updated for Phase 4)
     const validateCoherenceCommand = vscode.commands.registerCommand("sol.validateSemanticCoherence", () => __awaiter(this, void 0, void 0, function* () {
         const activeEditor = vscode.window.activeTextEditor;
@@ -439,115 +477,67 @@ function showValidationResults(validationResult) {
     });
 }
 function generateValidationResultsHtml(validationResult) {
-    const errors = validationResult.errors.filter((e) => e.severity === "error");
-    const warnings = validationResult.errors.filter((e) => e.severity === "warning");
-    const info = validationResult.errors.filter((e) => e.severity === "info");
-    return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>SOL Validation Results</title>
-            <style>
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; }
-                .header { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-                .stats { display: flex; gap: 20px; margin-bottom: 20px; }
-                .stat { padding: 10px; border-radius: 5px; text-align: center; }
-                .success { background: #d4edda; color: #155724; }
-                .warning { background: #fff3cd; color: #856404; }
-                .error { background: #f8d7da; color: #721c24; }
-                .issue { margin: 10px 0; padding: 10px; border-left: 4px solid #ccc; }
-                .issue.error { border-left-color: #dc3545; }
-                .issue.warning { border-left-color: #ffc107; }
-                .issue.info { border-left-color: #17a2b8; }
-                .artifacts { margin-top: 20px; }
-                .artifact { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 3px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>🔍 SOL Semantic Validation Results</h1>
-                <p>Validación completada en ${validationResult.processingTime}ms</p>
-            </div>
-            
-            <div class="stats">
-                <div class="stat success">
-                    <h3>${validationResult.artifacts.length}</h3>
-                    <p>Artefactos</p>
-                </div>
-                <div class="stat ${errors.length > 0 ? "error" : "success"}">
-                    <h3>${errors.length}</h3>
-                    <p>Errores</p>
-                </div>
-                <div class="stat ${warnings.length > 0 ? "warning" : "success"}">
-                    <h3>${warnings.length}</h3>
-                    <p>Advertencias</p>
-                </div>
-                <div class="stat ${info.length > 0 ? "warning" : "success"}">
-                    <h3>${info.length}</h3>
-                    <p>Información</p>
-                </div>
-            </div>
-
-            ${errors.length > 0
-        ? `
-                <h2>❌ Errores Semánticos</h2>
-                ${errors
-            .map((error) => `
-                    <div class="issue error">
-                        <strong>Línea ${error.line + 1}:</strong> ${error.message}
-                        <br><small><strong>Sugerencia:</strong> ${error.suggestion || "No disponible"}</small>
-                        <br><small><strong>Regla:</strong> ${error.ruleId}</small>
-                    </div>
-                `)
-            .join("")}
-            `
-        : ""}
-
-            ${warnings.length > 0
-        ? `
-                <h2>⚠️ Advertencias</h2>
-                ${warnings
-            .map((warning) => `
-                    <div class="issue warning">
-                        <strong>Línea ${warning.line + 1}:</strong> ${warning.message}
-                        <br><small><strong>Sugerencia:</strong> ${warning.suggestion}</small>
-                        <br><small><strong>Regla:</strong> ${warning.ruleId}</small>
-                    </div>
-                `)
-            .join("")}
-            `
-        : ""}
-
-            ${validationResult.warnings.length > 0
-        ? `
-                <h2>💡 Recomendaciones de Mejora</h2>
-                ${validationResult.warnings
-            .map((warning) => `
-                    <div class="issue info">
-                        <strong>Línea ${warning.line + 1}:</strong> ${warning.message}
-                        <br><small><strong>Sugerencia:</strong> ${warning.suggestion}</small>
-                        <br><small><strong>Regla:</strong> ${warning.ruleId}</small>
-                    </div>
-                `)
-            .join("")}
-            `
-        : ""}
-
-            <div class="artifacts">
-                <h2>📋 Artefactos Encontrados</h2>
-                ${validationResult.artifacts
-        .map((artifact) => `
-                    <div class="artifact">
-                        <strong>${artifact.type}:${artifact.id}</strong> (Línea ${artifact.line + 1})
-                        ${artifact.references.length > 0
-        ? `<br><small>Referencias: ${artifact.references.join(", ")}</small>`
-        : ""}
-                    </div>
-                `)
-        .join("")}
-            </div>
-        </body>
-        </html>
-    `;
+    let html = `
+    <h2>SOL Semantic Validation Results</h2>
+    <p><strong>Processing Time:</strong> ${validationResult.processingTime}ms</p>
+    <p><strong>Artifacts Validated:</strong> ${validationResult.artifacts.length}</p>
+    <h3>Errors (${validationResult.errors.length})</h3>
+    <ul>
+  `;
+    validationResult.errors.forEach(error => {
+        html += `<li><strong>Line ${error.line}:</strong> ${error.message}</li>`;
+    });
+    html += `
+    </ul>
+    <h3>Warnings (${validationResult.warnings.length})</h3>
+    <ul>
+  `;
+    validationResult.warnings.forEach(warning => {
+        html += `<li><strong>Line ${warning.line}:</strong> ${warning.message}</li>`;
+    });
+    html += `
+    </ul>
+    <h3>Artifacts Found</h3>
+    <ul>
+  `;
+    validationResult.artifacts.forEach(artifact => {
+        html += `<li><strong>${artifact.type}:</strong> ${artifact.id} (Line ${artifact.line})</li>`;
+    });
+    html += `</ul>`;
+    return html;
+}
+// Helper functions for artifact categorization and documentation
+function getArtifactCategory(type) {
+    if (["Intent", "Context", "Authority", "Evaluation"].includes(type))
+        return "Foundational";
+    if (["Vision", "Policy", "Concept", "Principle", "Guideline", "Indicator"].includes(type))
+        return "Strategic";
+    if (["Process", "Procedure", "Event", "Observation", "Result"].includes(type))
+        return "Operational";
+    if (["Actor", "Area"].includes(type))
+        return "Organizational";
+    return "Legacy";
+}
+function getArtifactDescription(type) {
+    const descriptions = {
+        "Intent": "Defines the **purpose and motivation** behind an initiative. Used to establish the 'why' of organizational actions.",
+        "Context": "Establishes the **operational context and boundaries** for activities. Defines scope, timeframe, and stakeholders.",
+        "Authority": "Defines **who has the authority and legitimacy** to make decisions or take actions within the specified context.",
+        "Evaluation": "Specifies **success criteria and measurement methods** for determining if objectives are met.",
+        "Vision": "**Strategic aspirational statements** that define the desired future state of the organization.",
+        "Policy": "**Mandatory rules and regulations** that must be followed within the organization.",
+        "Concept": "**Fundamental definitions** and organizational concepts that establish common understanding.",
+        "Principle": "**Core guiding principles** for decision-making and behavior within the organization.",
+        "Guideline": "**Recommended practices and approaches** that provide direction without being mandatory.",
+        "Indicator": "**Measurable metrics and KPIs** used to track progress and performance.",
+        "Process": "**Operational workflows and procedures** that define how work gets done.",
+        "Procedure": "**Detailed step-by-step instructions** for executing specific tasks or activities.",
+        "Event": "**Discrete occurrences** that trigger actions or represent significant happenings.",
+        "Observation": "**Monitoring points and data collection** activities for organizational learning.",
+        "Result": "**Outputs and deliverables** produced by processes and activities.",
+        "Actor": "**Roles and responsibilities** within the organization, including people and systems.",
+        "Area": "**Organizational departments and domains** that group related activities and responsibilities."
+    };
+    return descriptions[type] || "SOL artifact - refer to documentation for more details.";
 }
 //# sourceMappingURL=extension.js.map

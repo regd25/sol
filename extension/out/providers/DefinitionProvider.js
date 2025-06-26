@@ -3,6 +3,7 @@
  * SOL Definition Provider for Go to Definition (Ctrl+Click)
  *
  * Provides go-to-definition functionality for SOL artifact references.
+ * Supports all 20 SOL artifact types and hierarchical references.
  *
  * @author Randy Gala <randy@hexy.dev>
  * @license MIT
@@ -43,13 +44,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefinitionProvider = void 0;
 const vscode = __importStar(require("vscode"));
 class DefinitionProvider {
+    constructor() {
+        this.SOL_ARTIFACT_TYPES = [
+            // Foundational (4)
+            "Intent", "Context", "Authority", "Evaluation",
+            // Strategic (6)
+            "Vision", "Policy", "Concept", "Principle", "Guideline", "Indicator",
+            // Operational (5)
+            "Process", "Procedure", "Event", "Observation", "Result",
+            // Organizational (2)
+            "Actor", "Area"
+        ];
+    }
     provideDefinition(document, position, token) {
-        const wordRange = document.getWordRangeAtPosition(position, /([A-Z][a-zA-Z0-9]*):([A-Z][a-zA-Z0-9]*)/);
+        // Enhanced pattern to match SOL references including hierarchical ones
+        const wordRange = document.getWordRangeAtPosition(position, /(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area|Domain)\s*:\s*([A-Z][a-zA-Z0-9_]*(?:\.[A-Z][a-zA-Z0-9_]*)*)/);
         if (!wordRange) {
             return undefined;
         }
         const text = document.getText(wordRange);
-        const match = text.match(/([A-Z][a-zA-Z0-9]*):([A-Z][a-zA-Z0-9]*)/);
+        const match = text.match(/(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area|Domain)\s*:\s*([A-Z][a-zA-Z0-9_]*(?:\.[A-Z][a-zA-Z0-9_]*)*)/);
         if (!match) {
             return undefined;
         }
@@ -60,60 +74,85 @@ class DefinitionProvider {
         if (definitionLocation) {
             return new vscode.Location(document.uri, definitionLocation);
         }
-        // TODO: Search in workspace for definitions in other files
+        // Search in workspace for definitions in other files
         return this.searchWorkspaceForDefinition(artifactType, artifactId);
     }
     findDefinitionLocation(document, artifactType, artifactId) {
         const text = document.getText();
-        // Look for artifact definition for types that might not have ID on the same line (like Area)
-        if (artifactType === "Area") {
-            const areaPattern = new RegExp(`^Area:\s*$`, "gm");
-            let match;
-            areaPattern.lastIndex = 0;
-            while ((match = areaPattern.exec(text)) !== null) {
-                const position = document.positionAt(match.index);
-                const nextLines = this.getNextLines(document, position.line, 10); // Check next 10 lines for id
-                if (this.checkIdInLines(nextLines, artifactId)) {
-                    // Found the Area: block, now find the 'id: ArtifactId' line within it
-                    const idPattern = new RegExp(`^\s*id:\s*${artifactId}`, "m");
-                    for (let i = 0; i < nextLines.length; i++) {
-                        const idMatch = nextLines[i].match(idPattern);
-                        if (idMatch) {
-                            // Calculate the position of the ID within the document
-                            const idLineOffset = i + 1; // +1 because getNextLines starts from next line
-                            const idPosition = document.positionAt(document.offsetAt(new vscode.Position(position.line + idLineOffset, nextLines[i].indexOf("id:") + "id:".length + 1) // Adjust for "id:" and space
-                            ));
-                            return idPosition;
+        // Handle hierarchical references (e.g., Area:Technology.Development)
+        const idParts = artifactId.split('.');
+        const baseId = idParts[0];
+        const isHierarchical = idParts.length > 1;
+        // Pattern 1: Direct artifact definition (e.g., Vision: or Vision:MyVisionId)
+        const directPattern = new RegExp(`^\\s*${artifactType}\\s*:\\s*${artifactId}\\s*$`, "gm");
+        let match = directPattern.exec(text);
+        if (match) {
+            return document.positionAt(match.index + match[0].indexOf(artifactId));
+        }
+        // Pattern 2: Artifact block with separate id field
+        const blockPattern = new RegExp(`^\\s*${artifactType}\\s*:\\s*$`, "gm");
+        blockPattern.lastIndex = 0;
+        while ((match = blockPattern.exec(text)) !== null) {
+            const position = document.positionAt(match.index);
+            const nextLines = this.getNextLines(document, position.line, 20); // Increased search range
+            // Look for id field in the block
+            if (this.checkIdInLines(nextLines, baseId)) {
+                const idPattern = new RegExp(`^\\s*id:\\s*${baseId}\\s*$`, "m");
+                for (let i = 0; i < nextLines.length; i++) {
+                    const idMatch = nextLines[i].match(idPattern);
+                    if (idMatch) {
+                        const idLineOffset = i + 1;
+                        const idPosition = new vscode.Position(position.line + idLineOffset, nextLines[i].indexOf(baseId));
+                        return idPosition;
+                    }
+                }
+            }
+            // For hierarchical references, also check if this is a parent structure
+            if (isHierarchical) {
+                const parentIdPattern = new RegExp(`^\\s*id:\\s*${baseId}\\s*$`, "m");
+                for (let i = 0; i < nextLines.length; i++) {
+                    if (parentIdPattern.test(nextLines[i])) {
+                        // Found parent, now look for hierarchical child definition
+                        const childId = idParts.slice(1).join('.');
+                        const hierarchicalPosition = this.findHierarchicalChild(document, position.line + i + 1, childId);
+                        if (hierarchicalPosition) {
+                            return hierarchicalPosition;
                         }
                     }
                 }
             }
         }
-        else {
-            // General case: Look for artifact definition with ID on the same or next line
-            const typePattern = new RegExp(`^${artifactType}:\s*$`, "gm");
-            let match;
-            typePattern.lastIndex = 0;
-            while ((match = typePattern.exec(text)) !== null) {
-                const position = document.positionAt(match.index);
-                const nextLines = this.getNextLines(document, position.line, 10);
-                if (this.checkIdInLines(nextLines, artifactId)) {
-                    // If the ID is found in the next lines, we need to find its exact position
-                    const idPattern = new RegExp(`^\s*(?:-\s*)?id:\s*${artifactId}`, "m");
-                    for (let i = 0; i < nextLines.length; i++) {
-                        const idMatch = nextLines[i].match(idPattern);
-                        if (idMatch) {
-                            const idLineOffset = i + 1;
-                            return document.positionAt(document.offsetAt(new vscode.Position(position.line + idLineOffset, nextLines[i].indexOf("id:") + "id:".length + 1)));
-                        }
-                    }
+        // Pattern 3: Template-style definition with brackets
+        const templatePattern = new RegExp(`^\\s*${artifactType}\\s*:\\s*\\[${artifactId}\\]`, "gm");
+        templatePattern.lastIndex = 0;
+        while ((match = templatePattern.exec(text)) !== null) {
+            return document.positionAt(match.index + match[0].indexOf(`[${artifactId}]`) + 1);
+        }
+        // Pattern 4: Array item definition
+        const arrayPattern = new RegExp(`^\\s*-\\s*id:\\s*${artifactId}\\s*$`, "gm");
+        arrayPattern.lastIndex = 0;
+        while ((match = arrayPattern.exec(text)) !== null) {
+            return document.positionAt(match.index + match[0].indexOf(artifactId));
+        }
+        return undefined;
+    }
+    findHierarchicalChild(document, startLine, childPath) {
+        const childParts = childPath.split('.');
+        let currentSearchLine = startLine;
+        for (const part of childParts) {
+            const childPattern = new RegExp(`^\\s*${part}\\s*:`, "m");
+            const remainingText = document.getText(new vscode.Range(new vscode.Position(currentSearchLine, 0), new vscode.Position(document.lineCount - 1, 0)));
+            const match = childPattern.exec(remainingText);
+            if (match) {
+                const matchPosition = document.positionAt(document.offsetAt(new vscode.Position(currentSearchLine, 0)) + match.index);
+                currentSearchLine = matchPosition.line + 1;
+                // If this is the last part, return its position
+                if (part === childParts[childParts.length - 1]) {
+                    return new vscode.Position(matchPosition.line, match.index + match[0].indexOf(part));
                 }
             }
-            // Look for direct ID definition (e.g., - id: MyId)
-            const directIdPattern = new RegExp(`^\s*-\s*id:\s*${artifactId}`, "gm");
-            directIdPattern.lastIndex = 0;
-            while ((match = directIdPattern.exec(text)) !== null) {
-                return document.positionAt(match.index + match[0].indexOf(artifactId));
+            else {
+                return undefined;
             }
         }
         return undefined;
@@ -134,9 +173,22 @@ class DefinitionProvider {
     }
     searchWorkspaceForDefinition(artifactType, artifactId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // This is a placeholder for future functionality to search across files.
-            // For now, it only searches in the current document.
-            return [];
+            const locations = [];
+            try {
+                // Search for SOL files in workspace
+                const solFiles = yield vscode.workspace.findFiles("**/*.{sop,yml,mdop}", "**/node_modules/**");
+                for (const file of solFiles) {
+                    const document = yield vscode.workspace.openTextDocument(file);
+                    const definition = this.findDefinitionLocation(document, artifactType, artifactId);
+                    if (definition) {
+                        locations.push(new vscode.Location(file, definition));
+                    }
+                }
+            }
+            catch (error) {
+                console.error("Error searching workspace for SOL definitions:", error);
+            }
+            return locations;
         });
     }
 }

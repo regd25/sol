@@ -45,7 +45,7 @@
     "increaseIndentPattern": "^\\s*(.*:)\\s*$",
     "decreaseIndentPattern": "^\\s*\\}\\s*$"
   },
-  "wordPattern": "[A-Za-z0-9_]+",
+  "wordPattern": "[A-Za-z0-9_\\.]+",
   "onEnterRules": [
     {
       "beforeText": "^\\s*#.*$",
@@ -58,6 +58,18 @@
       "action": {
         "indent": "indent"
       }
+    },
+    {
+      "beforeText": "^\\s*(meta|intent|context|authority|evaluation|uses|relates):.*$",
+      "action": {
+        "indent": "indent"
+      }
+    },
+    {
+      "beforeText": "^\\s*(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area):.*$",
+      "action": {
+        "indent": "indent"
+      }
     }
   ],
   "folding": {
@@ -65,5 +77,27 @@
       "start": "^\\s*([A-Z][a-zA-Z0-9_]*):.*$",
       "end": "^\\s*$"
     }
-  }
+  },
+  "surroundingPairs": [
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ],
+    [
+      "\"",
+      "\""
+    ],
+    [
+      "'",
+      "'"
+    ]
+  ]
 }
