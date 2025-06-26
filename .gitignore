@@ -149,3 +149,5 @@ coverage/
 test-*.sop
 *-test.sop
 *.sop.bak
+
+extension/out
