@@ -151,3 +151,4 @@ test-*.sop
 *.sop.bak
 
 extension/out
+extension/node_modules
